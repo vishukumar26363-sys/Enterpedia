@@ -14,7 +14,7 @@ export const products: Product[] = [
     title: "The 6-Day YouTube Accelerator",
     description:
       "Email course designed to help you provide expert guidance on YouTube ads while upselling your services.",
-    price: 37.0,
+    price: 10.0,
     category: "Templates",
     imageUrl: "https://picsum.photos/seed/youtube/800/600",
     features: [
@@ -31,7 +31,7 @@ export const products: Product[] = [
     title: "100+ Premium Logo Templates",
     description:
       "High-quality minimalist logo templates for startups and small businesses. Includes source files.",
-    price: 29.0,
+    price: 10.0,
     category: "Graphics",
     imageUrl: "https://picsum.photos/seed/logos/600/400",
     features: [
@@ -48,7 +48,7 @@ export const products: Product[] = [
     title: "Passive Income Blueprint Ebook",
     description:
       "A 50-page guide on building passive income streams. Rebrand it and sell it as your own.",
-    price: 19.0,
+    price: 10.0,
     category: "Ebooks",
     imageUrl: "https://picsum.photos/seed/ebook/600/400",
     features: [
@@ -65,7 +65,7 @@ export const products: Product[] = [
     title: "Email Marketing Automation Scripts",
     description:
       "Plug-and-play email sequences for welcome series, abandoned cart, and product launches.",
-    price: 47.0,
+    price: 10.0,
     category: "Templates",
     imageUrl: "https://picsum.photos/seed/email/600/400",
     features: [
@@ -82,7 +82,7 @@ export const products: Product[] = [
     title: "SEO Audit Tool Software",
     description:
       "White-label SEO audit software you can rebrand and sell to local businesses.",
-    price: 197.0,
+    price: 10.0,
     category: "Software",
     imageUrl: "https://picsum.photos/seed/software/600/400",
     features: [
@@ -99,7 +99,7 @@ export const products: Product[] = [
     title: "Minimalist Presentation Deck",
     description:
       "Clean and modern slide deck templates for pitches, webinars, and courses.",
-    price: 24.0,
+    price: 10.0,
     category: "Templates",
     imageUrl: "https://picsum.photos/seed/presentation/600/400",
     features: [
@@ -116,7 +116,7 @@ export const products: Product[] = [
     title: "Digital Marketing Video Course",
     description:
       "A 10-module video course on digital marketing basics. Sell it to your audience.",
-    price: 97.0,
+    price: 10.0,
     category: "Ebooks", // Putting under Ebooks/Courses for simplicity
     imageUrl: "https://picsum.photos/seed/course/600/400",
     features: [
@@ -133,7 +133,7 @@ export const products: Product[] = [
     title: "Abstract Background Bundle",
     description:
       "500+ high-resolution abstract backgrounds for web design, social media, and print.",
-    price: 15.0,
+    price: 10.0,
     category: "Graphics",
     imageUrl: "https://picsum.photos/seed/abstract/600/400",
     features: [
