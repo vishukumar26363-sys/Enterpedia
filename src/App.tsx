@@ -22,6 +22,7 @@ export default function App() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
   const [user, setUser] = useState<{ name: string; email: string } | null>(
     null,
   );

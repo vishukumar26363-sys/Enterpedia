@@ -59,16 +59,10 @@ export default function PaymentSimulationModal({
     e.preventDefault();
     if (!product) return;
     
-    // 1. INSTANT UI UPDATE (No waiting)
+    // 1. INSTANT UI UPDATE
     setOrderStatus("pending");
     
-    // DYNAMIC PRICE UPI LINK
-    const upiUrl = `upi://pay?pa=6394663971@ptaxis&pn=Vishu%20Kumar&am=${currentPrice}&cu=INR`;
-    
-    // 2. Trigger UPI App IMMEDIATELY (works on mobile)
-    window.location.href = upiUrl;
-    
-    // 3. Save to Firestore in background (don't await)
+    // 2. Save to Firestore in background
     addDoc(collection(db, "orders"), {
       productName: product.title,
       price: currentPrice,
@@ -82,7 +76,7 @@ export default function PaymentSimulationModal({
       console.error("Error processing order: ", error);
     });
 
-    // 4. Send EmailJS in background (don't await)
+    // 3. Send EmailJS in background
     emailjs.send(
       "service_g7j2e2e",
       "template_njt78tb",
@@ -145,16 +139,23 @@ export default function PaymentSimulationModal({
                     />
                   </div>
                   
+                  <div className="pt-4 border-t border-gray-100">
+                    <p className="text-sm font-bold text-black mb-3 text-center uppercase tracking-wider">Scan QR to Pay ₹{currentPrice.toFixed(0)}</p>
+                    <div className="bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center">
+                      <img 
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=6394663971@ptaxis%26pn=Vishu%20Kumar%26am=10%26cu=INR" 
+                        alt="Payment QR Code"
+                        className="w-56 h-56 mb-4 shadow-lg rounded-lg bg-white p-2"
+                      />
+                      <p className="text-[10px] text-gray-400 uppercase font-bold">Scan with any UPI App</p>
+                    </div>
+                  </div>
+                  
                   <button 
                     type="submit"
-                    disabled={isSubmitting}
-                    className="w-full mt-6 bg-black hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-lg transition-colors flex justify-center items-center"
+                    className="w-full mt-6 bg-black hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-lg transition-colors flex justify-center items-center shadow-xl shadow-black/10"
                   >
-                    {isSubmitting ? (
-                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      `Proceed to Pay ₹${currentPrice.toFixed(0)}`
-                    )}
+                    Submit Payment Details
                   </button>
                 </form>
               </>
