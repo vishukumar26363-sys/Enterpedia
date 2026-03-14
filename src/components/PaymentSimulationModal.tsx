@@ -63,7 +63,7 @@ export default function PaymentSimulationModal({
     setOrderStatus("pending");
     
     // DYNAMIC PRICE UPI LINK
-    const upiUrl = `upi://pay?pa=vishukumar26363@okicici&pn=Vishu%20Kumar&am=${currentPrice}&cu=INR`;
+    const upiUrl = `upi://pay?pa=6394663971@ptaxis&pn=Vishu%20Kumar&am=${currentPrice}&cu=INR`;
     
     // 2. Trigger UPI App IMMEDIATELY (works on mobile)
     window.location.href = upiUrl;
