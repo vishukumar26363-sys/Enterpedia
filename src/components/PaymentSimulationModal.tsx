@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CheckCircle2, Loader2, X, Download as DownloadIcon, CreditCard } from "lucide-react";
 import { Product } from "../types";
-import { collection, addDoc, onSnapshot, doc } from "firebase/firestore";
-import { db } from "../firebase";
-import emailjs from "@emailjs/browser";
 import { useWelcomeGift } from "../context/WelcomeGiftContext";
 
 interface PaymentSimulationModalProps {
@@ -29,6 +26,7 @@ export default function PaymentSimulationModal({
   const [orderStatus, setOrderStatus] = useState<'idle' | 'pending' | 'approved'>('idle');
   const [orderId, setOrderId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -38,57 +36,60 @@ export default function PaymentSimulationModal({
       setName("");
       setWhatsapp("");
       setIsSubmitting(false);
+    } else {
+      if (pollingInterval.current) clearInterval(pollingInterval.current);
     }
+    return () => {
+      if (pollingInterval.current) clearInterval(pollingInterval.current);
+    };
   }, [isOpen]);
 
-  // THE MASTER KEY: Real-time listener for Admin Approval
+  // Polling for Admin Approval
   useEffect(() => {
-    if (!orderId) return;
-    const unsub = onSnapshot(doc(db, "orders", orderId), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data.status === "approved") {
-          setOrderStatus("approved");
+    if (orderStatus === 'pending' && orderId) {
+      pollingInterval.current = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/payment/status/${orderId}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.status === 'approved') {
+              setOrderStatus('approved');
+              if (pollingInterval.current) clearInterval(pollingInterval.current);
+            }
+          }
+        } catch (err) {
+          console.error("Polling error:", err);
         }
-      }
-    });
-    return () => unsub();
-  }, [orderId]);
+      }, 3000);
+    }
+    return () => {
+      if (pollingInterval.current) clearInterval(pollingInterval.current);
+    };
+  }, [orderStatus, orderId]);
 
-  const handlePaymentSubmit = (e: React.FormEvent) => {
+  const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!product) return;
     
-    // 1. INSTANT UI UPDATE
-    setOrderStatus("pending");
+    setIsSubmitting(true);
     
-    // 2. Save to Firestore in background
-    addDoc(collection(db, "orders"), {
-      productName: product.title,
-      price: currentPrice,
-      name,
-      whatsapp,
-      status: "pending",
-      createdAt: new Date()
-    }).then((docRef) => {
-      setOrderId(docRef.id);
-    }).catch((error) => {
-      console.error("Error processing order: ", error);
-    });
-
-    // 3. Send EmailJS in background
-    emailjs.send(
-      "service_g7j2e2e",
-      "template_njt78tb",
-      {
-        to_email: "rajverma123orai@gmail.com",
-        customer_name: name,
-        customer_whatsapp: whatsapp,
-        product_name: product.title,
-        price: currentPrice
-      },
-      "dPACZq82ut8TB56qI"
-    ).catch(err => console.error("EmailJS Error:", err));
+    try {
+      const response = await fetch('/api/payment/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, whatsapp, productTitle: product.title, price: currentPrice })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setOrderId(data.orderId);
+        setOrderStatus('pending');
+      }
+    } catch (error) {
+      console.error("Error submitting payment:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen || !product) return null;
@@ -100,20 +101,29 @@ export default function PaymentSimulationModal({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative"
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative"
         >
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-black z-10 transition-colors"
-          >
-            <X className="h-6 w-6" />
-          </button>
-
-          <div className="p-6 md:p-8">
+          <div className="p-5 md:p-7">
             {orderStatus === 'idle' ? (
               <>
-                <h3 className="text-2xl font-bold text-black mb-2">Checkout</h3>
-                <p className="text-gray-500 mb-6">Enter your details to proceed with the payment for <strong>{product.title}</strong>.</p>
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-black">Checkout</h3>
+                    <p className="text-gray-500 text-sm">Enter your details to proceed with the payment.</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (orderStatus === 'approved') {
+                        onClose();
+                      } else {
+                        alert("Please complete the payment and wait for admin approval to close this page.");
+                      }
+                    }}
+                    className={`transition-colors p-1 ${orderStatus === 'approved' ? 'text-gray-400 hover:text-black' : 'text-gray-200 cursor-not-allowed'}`}
+                  >
+                    <X className="h-7 w-7" />
+                  </button>
+                </div>
                 
                 <form onSubmit={handlePaymentSubmit} className="space-y-4">
                   <div>
@@ -140,22 +150,28 @@ export default function PaymentSimulationModal({
                   </div>
                   
                   <div className="pt-4 border-t border-gray-100">
+                    <div className="text-center mb-4">
+                      <h4 className="text-2xl font-bold text-black">Vishal Kumar Verma</h4>
+                      <div className="h-1 w-16 bg-black mx-auto mt-2 rounded-full"></div>
+                    </div>
                     <p className="text-sm font-bold text-black mb-3 text-center uppercase tracking-wider">Scan QR to Pay ₹{currentPrice.toFixed(0)}</p>
                     <div className="bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center">
+                      {/* QR Code Image */}
                       <img 
-                        src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=6394663971@ptaxis%26pn=Vishu%20Kumar%26am=10%26cu=INR" 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=6394663971@ptaxis%26pn=Vishu%20Kumar%26am=${currentPrice}%26cu=INR`} 
                         alt="Payment QR Code"
-                        className="w-56 h-56 mb-4 shadow-lg rounded-lg bg-white p-2"
+                        className="w-52 h-52 mb-4 shadow-lg rounded-lg bg-white p-2"
                       />
-                      <p className="text-[10px] text-gray-400 uppercase font-bold">Scan with any UPI App</p>
+                      <p className="text-xs text-gray-400 uppercase font-bold">Scan with any UPI App</p>
                     </div>
                   </div>
                   
                   <button 
                     type="submit"
-                    className="w-full mt-6 bg-black hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-lg transition-colors flex justify-center items-center shadow-xl shadow-black/10"
+                    disabled={isSubmitting}
+                    className="w-full mt-6 bg-black hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-lg transition-colors flex justify-center items-center shadow-xl shadow-black/10 disabled:opacity-50"
                   >
-                    Submit Payment Details
+                    {isSubmitting ? <Loader2 className="animate-spin h-6 w-6" /> : "Submit Payment Details"}
                   </button>
                 </form>
               </>
@@ -164,7 +180,11 @@ export default function PaymentSimulationModal({
                 <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mb-6"></div>
                 <h3 className="text-2xl font-bold text-black mb-2">Waiting for Admin Approval...</h3>
                 <p className="text-gray-500 mb-2">We have received your request.</p>
-                <p className="text-gray-500 text-sm">Please complete the payment on your UPI app. Once confirmed by the admin, your download will unlock automatically.</p>
+                <p className="text-gray-500 text-sm mb-6">Please complete the payment on your UPI app. Once confirmed by the admin, your download will unlock automatically.</p>
+                
+                <div className="w-full p-4 bg-yellow-50 rounded-xl border border-yellow-100 text-yellow-800 text-sm font-medium">
+                  ⚠️ This page is locked until payment is verified by Raj Verma.
+                </div>
               </div>
             ) : (
               <div className="text-center flex flex-col items-center pt-8 pb-4">

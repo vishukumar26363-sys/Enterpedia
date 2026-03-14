@@ -17,11 +17,35 @@ import PaymentSimulationModal from "./components/PaymentSimulationModal";
 import { WelcomeGiftProvider } from "./context/WelcomeGiftContext";
 import { products } from "./data";
 import { Product, CartItem } from "./types";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "./firebase";
+import { useEffect } from "react";
 
 export default function App() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Handle Order Approval via URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const approveId = urlParams.get('approve');
+    if (approveId) {
+      const approveOrder = async () => {
+        try {
+          await updateDoc(doc(db, "orders", approveId), {
+            status: "approved"
+          });
+          alert("Order Approved Successfully!");
+          // Clean up URL
+          window.history.replaceState({}, document.title, "/");
+        } catch (error) {
+          console.error("Error approving order:", error);
+        }
+      };
+      approveOrder();
+    }
+  }, []);
 
   const [user, setUser] = useState<{ name: string; email: string } | null>(
     null,
