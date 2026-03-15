@@ -377,14 +377,8 @@ export default function ProductDetails({
                     <p className="text-gray-500 text-sm">Enter your details to proceed with the payment.</p>
                   </div>
                   <button 
-                    onClick={() => {
-                      if (orderStatus === 'approved') {
-                        setIsModalOpen(false);
-                      } else {
-                        alert("Please complete the payment and wait for admin approval to close this page.");
-                      }
-                    }}
-                    className={`transition-colors p-1 ${orderStatus === 'approved' ? 'text-gray-400 hover:text-black' : 'text-gray-200 cursor-not-allowed'}`}
+                    onClick={() => setIsModalOpen(false)}
+                    className="text-gray-400 hover:text-black transition-colors p-1"
                   >
                     <X className="w-7 h-7" />
                   </button>
@@ -445,10 +439,6 @@ export default function ProductDetails({
                 <h3 className="text-2xl font-bold text-black mb-2">Waiting for Admin Approval...</h3>
                 <p className="text-gray-500 mb-2">We have received your request.</p>
                 <p className="text-gray-500 text-sm mb-6">Please complete the payment on your UPI app. Once confirmed by the admin, your download will unlock automatically.</p>
-                
-                <div className="w-full p-4 bg-yellow-50 rounded-xl border border-yellow-100 text-yellow-800 text-sm font-medium">
-                  ⚠️ This page is locked until payment is verified by Raj Verma.
-                </div>
               </div>
             ) : (
               <div className="text-center flex flex-col items-center pt-8 pb-4">
