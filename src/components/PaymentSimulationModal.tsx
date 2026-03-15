@@ -104,9 +104,13 @@ export default function PaymentSimulationModal({
         const data = await response.json();
         setOrderId(data.orderId);
         setOrderStatus('pending');
+      } else {
+        const errorData = await response.json();
+        alert(`Submission failed: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error("Error submitting payment:", error);
+      alert("Error submitting payment details. Please check your connection.");
     } finally {
       setIsSubmitting(false);
     }

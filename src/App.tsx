@@ -145,6 +145,7 @@ export default function App() {
               product={selectedProduct}
               onBack={() => setSelectedProduct(null)}
               onAddToCart={handleAddToCart}
+              onDownload={handleDownloadRequest}
             />
           ) : !showProducts ? (
             <>
