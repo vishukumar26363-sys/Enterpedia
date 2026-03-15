@@ -15,8 +15,18 @@ async function startServer() {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.EMAIL_USER || 'rajverma123orai@gmail.com',
-      pass: process.env.EMAIL_PASS // User must set this as an App Password
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    }
+  });
+
+  // Verify transporter connection
+  transporter.verify((error) => {
+    if (error) {
+      console.error("❌ Email Transporter Error:", error.message);
+      console.log("Please ensure EMAIL_USER and EMAIL_PASS (App Password) are correct in Settings.");
+    } else {
+      console.log("✅ Email Transporter is ready to send emails.");
     }
   });
 
@@ -24,7 +34,11 @@ async function startServer() {
 
   // Health check
   app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", timestamp: Date.now() });
+    res.json({ 
+      status: "ok", 
+      emailConfigured: !!process.env.EMAIL_PASS,
+      timestamp: Date.now() 
+    });
   });
 
   // In-memory store for orders (for demo purposes)
@@ -54,13 +68,16 @@ async function startServer() {
     };
     
     orders.set(orderId, newOrder);
+    console.log(`[New Order] ID: ${orderId} from ${name}`);
 
-    const appUrl = process.env.APP_URL || `https://${req.get('host')}`;
+    // Construct absolute URL for approval link
+    const rawAppUrl = process.env.APP_URL || `https://${req.get('host')}`;
+    const appUrl = rawAppUrl.replace(/\/$/, ''); // Remove trailing slash if any
     const approvalLink = `${appUrl}/api/payment/approve/${orderId}`;
     
     // Send Real Email
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'rajverma123orai@gmail.com',
+      from: `"Enterpedia Admin" <${process.env.EMAIL_USER || 'rajverma123orai@gmail.com'}>`,
       to: 'rajverma123orai@gmail.com',
       subject: `🚀 Enterpedia: New Order from ${name}`,
       html: `
@@ -89,6 +106,9 @@ async function startServer() {
             <p style="font-size: 13px; color: #6b7280; text-align: center; line-height: 1.4;">
               Once you click the button, the customer's waiting screen will automatically update to "Approved" and their download will unlock.
             </p>
+            <p style="font-size: 11px; color: #9ca3af; text-align: center; margin-top: 10px;">
+              Link: <a href="${approvalLink}" style="color: #9ca3af;">${approvalLink}</a>
+            </p>
           </div>
           <div style="background: #f9fafb; padding: 16px; text-align: center; border-top: 1px solid #e5e7eb;">
             <p style="margin: 0; font-size: 12px; color: #9ca3af;">&copy; 2026 Enterpedia Admin Dashboard</p>
@@ -100,15 +120,15 @@ async function startServer() {
     try {
       if (process.env.EMAIL_PASS) {
         await transporter.sendMail(mailOptions);
-        console.log(`Email sent successfully to rajverma123orai@gmail.com for order ${orderId}`);
+        console.log(`✅ Email sent successfully to rajverma123orai@gmail.com for order ${orderId}`);
       } else {
-        console.warn("EMAIL_PASS not set. Email not sent. Logging to console instead:");
+        console.error("❌ EMAIL_PASS is missing! Cannot send email.");
         console.log("-----------------------------------------");
-        console.log(`APPROVAL LINK: ${approvalLink}`);
+        console.log(`FALLBACK APPROVAL LINK: ${approvalLink}`);
         console.log("-----------------------------------------");
       }
-    } catch (error) {
-      console.error("Error sending email:", error);
+    } catch (error: any) {
+      console.error("❌ Error sending email:", error.message);
     }
 
     res.json({ orderId, status: 'pending' });
