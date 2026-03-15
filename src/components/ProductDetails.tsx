@@ -68,19 +68,39 @@ export default function ProductDetails({
 
   // Polling for Admin Approval
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 5;
+
     if (orderStatus === 'pending' && orderId) {
       pollingInterval.current = setInterval(async () => {
         try {
           const res = await fetch(`/api/payment/status/${orderId}`);
+          
+          if (res.status === 404) {
+            // Order lost (likely server restart)
+            console.warn("Order not found on server. It may have restarted.");
+            setOrderStatus('idle');
+            setOrderId(null);
+            if (pollingInterval.current) clearInterval(pollingInterval.current);
+            return;
+          }
+
           if (res.ok) {
             const data = await res.json();
             if (data.status === 'approved') {
               setOrderStatus('approved');
               if (pollingInterval.current) clearInterval(pollingInterval.current);
             }
+            retryCount = 0; // Reset on success
           }
         } catch (err) {
-          console.error("Polling error:", err);
+          retryCount++;
+          console.error(`Polling error (attempt ${retryCount}):`, err);
+          
+          if (retryCount >= maxRetries) {
+            console.error("Max polling retries reached. Stopping.");
+            if (pollingInterval.current) clearInterval(pollingInterval.current);
+          }
         }
       }, 3000);
     }
