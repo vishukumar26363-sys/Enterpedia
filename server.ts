@@ -62,31 +62,36 @@ async function startServer() {
     const mailOptions = {
       from: process.env.EMAIL_USER || 'rajverma123orai@gmail.com',
       to: 'rajverma123orai@gmail.com',
-      subject: `🚀 New Order: ₹${price} from ${name}`,
+      subject: `🚀 Enterpedia: New Order from ${name}`,
       html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
-          <div style="background: #000; color: #fff; padding: 24px; text-align: center;">
-            <h1 style="margin: 0; font-size: 24px;">New Payment Received</h1>
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+          <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); color: #fff; padding: 32px 24px; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px; letter-spacing: 1px;">Enterpedia</h1>
+            <p style="margin: 8px 0 0 0; opacity: 0.8; font-size: 14px;">New Payment Notification</p>
           </div>
-          <div style="padding: 24px; color: #374151;">
-            <p style="font-size: 16px; margin-bottom: 24px;">You have received a new payment request for <strong>${productTitle}</strong>.</p>
+          <div style="padding: 32px; color: #1f2937; background-color: #ffffff;">
+            <p style="font-size: 16px; line-height: 1.5; margin-bottom: 24px;">Hello Raj, you have a new order request for <strong>${productTitle}</strong>.</p>
             
-            <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-              <p style="margin: 0 0 10px 0;"><strong>Customer:</strong> ${name}</p>
-              <p style="margin: 0 0 10px 0;"><strong>WhatsApp:</strong> ${whatsapp}</p>
-              <p style="margin: 0 0 10px 0;"><strong>Product:</strong> ${productTitle}</p>
-              <p style="margin: 0; font-size: 18px; color: #059669;"><strong>Amount Paid:</strong> ₹${price}</p>
+            <div style="background: #f3f4f6; padding: 24px; border-radius: 12px; margin-bottom: 32px; border: 1px solid #f3f4f6;">
+              <h3 style="margin: 0 0 16px 0; font-size: 14px; text-transform: uppercase; color: #6b7280; letter-spacing: 0.05em;">Customer Details</h3>
+              <p style="margin: 0 0 12px 0; font-size: 16px;"><strong>Name:</strong> ${name}</p>
+              <p style="margin: 0 0 12px 0; font-size: 16px;"><strong>WhatsApp:</strong> ${whatsapp}</p>
+              <p style="margin: 0 0 12px 0; font-size: 16px;"><strong>Product:</strong> ${productTitle}</p>
+              <p style="margin: 0; font-size: 20px; color: #059669; font-weight: bold;"><strong>Amount:</strong> ₹${price}</p>
             </div>
 
-            <p style="text-align: center; margin-bottom: 24px;">
-              <a href="${approvalLink}" style="display: inline-block; background: #000; color: #fff; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px;">
-                ✅ CONFIRM & APPROVE PAYMENT
+            <div style="text-align: center; margin-bottom: 32px;">
+              <a href="${approvalLink}" style="display: inline-block; background: #000000; color: #ffffff; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+                ✅ CONFIRM & APPROVE
               </a>
-            </p>
+            </div>
             
-            <p style="font-size: 12px; color: #9ca3af; text-align: center;">
-              Clicking the button above will immediately unlock the download for the customer.
+            <p style="font-size: 13px; color: #6b7280; text-align: center; line-height: 1.4;">
+              Once you click the button, the customer's waiting screen will automatically update to "Approved" and their download will unlock.
             </p>
+          </div>
+          <div style="background: #f9fafb; padding: 16px; text-align: center; border-top: 1px solid #e5e7eb;">
+            <p style="margin: 0; font-size: 12px; color: #9ca3af;">&copy; 2026 Enterpedia Admin Dashboard</p>
           </div>
         </div>
       `
