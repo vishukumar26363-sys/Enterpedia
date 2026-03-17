@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Bookmark } from "lucide-react";
+import { Analytics } from "@vercel/analytics/react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductGrid from "./components/ProductGrid";
@@ -352,6 +353,7 @@ export default function App() {
           isOpen={isRefundPolicyModalOpen}
           onClose={() => setIsRefundPolicyModalOpen(false)}
         />
+        <Analytics />
       </div>
     </WelcomeGiftProvider>
   );
