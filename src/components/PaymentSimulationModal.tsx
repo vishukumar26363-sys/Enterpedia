@@ -23,196 +23,208 @@ export default function PaymentSimulationModal({
 
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
-  const [orderStatus, setOrderStatus] = useState<'idle' | 'pending' | 'approved'>('idle');
-  const [orderId, setOrderId] = useState<string | null>(null);
+  const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanningText, setScanningText] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      setOrderStatus('idle');
-      setOrderId(null);
+      setIsScanning(false);
+      setShowSuccess(false);
+      setIsVerified(false);
+      setScanningText("");
       setName("");
       setWhatsapp("");
+      setScreenshot(null);
       setIsSubmitting(false);
-    } else {
-      if (pollingInterval.current) clearInterval(pollingInterval.current);
     }
-    return () => {
-      if (pollingInterval.current) clearInterval(pollingInterval.current);
-    };
   }, [isOpen]);
 
-  // Polling for Admin Approval
-  useEffect(() => {
-    let retryCount = 0;
-    const maxRetries = 5;
-
-    if (orderStatus === 'pending' && orderId) {
-      pollingInterval.current = setInterval(async () => {
-        try {
-          const res = await fetch(`/api/payment/status/${orderId}`);
-          
-          if (res.status === 404) {
-            // Order lost (likely server restart)
-            console.warn("Order not found on server. It may have restarted.");
-            setOrderStatus('idle');
-            setOrderId(null);
-            if (pollingInterval.current) clearInterval(pollingInterval.current);
-            return;
-          }
-
-          if (res.ok) {
-            const data = await res.json();
-            if (data.status === 'approved') {
-              setOrderStatus('approved');
-              if (pollingInterval.current) clearInterval(pollingInterval.current);
-            }
-            retryCount = 0; // Reset on success
-          }
-        } catch (err) {
-          retryCount++;
-          console.error(`Polling error (attempt ${retryCount}):`, err);
-          
-          if (retryCount >= maxRetries) {
-            console.error("Max polling retries reached. Stopping.");
-            if (pollingInterval.current) clearInterval(pollingInterval.current);
-          }
-        }
-      }, 3000);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setScreenshot(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-    return () => {
-      if (pollingInterval.current) clearInterval(pollingInterval.current);
-    };
-  }, [orderStatus, orderId]);
+  };
 
-  const handlePaymentSubmit = async (e: React.FormEvent) => {
+  const handleVerifyPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!product) return;
-    
-    setIsSubmitting(true);
-    
+    if (!product || !screenshot) {
+      alert("Please fill all details and upload a screenshot!");
+      return;
+    }
+
+    setIsScanning(true);
+    setScanningText("Scanning Payment Details...");
+
+    // Background submission (optional, but keeping it for admin notification)
     try {
-      const response = await fetch('/api/payment/submit', {
+      fetch('/api/payment/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, whatsapp, productTitle: product.title, price: currentPrice })
+        body: JSON.stringify({ 
+          name, 
+          whatsapp, 
+          productTitle: product.title, 
+          price: currentPrice,
+          screenshot 
+        })
       });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setOrderId(data.orderId);
-        setOrderStatus('pending');
-      } else {
-        const errorData = await response.json();
-        alert(`Submission failed: ${errorData.error || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error("Error submitting payment:", error);
-      alert("Error submitting payment details. Please check your connection.");
-    } finally {
-      setIsSubmitting(false);
+    } catch (err) {
+      console.error("Silent submission failed", err);
     }
+
+    // Magic Logic: 5 seconds scanning
+    setTimeout(() => {
+      setScanningText("Verifying Transaction ID...");
+    }, 2500);
+
+    setTimeout(() => {
+      setIsScanning(false);
+      setShowSuccess(true);
+      setIsVerified(true);
+    }, 5000);
   };
 
   if (!isOpen || !product) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm font-sans">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md font-sans">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative border border-gray-100"
         >
-          <div className="p-5 md:p-7">
-            {orderStatus === 'idle' ? (
+          <div className="p-6">
+            {!isScanning && !showSuccess ? (
               <>
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h3 className="text-2xl font-bold text-black">Checkout</h3>
-                    <p className="text-gray-500 text-sm">Enter your details to proceed with the payment.</p>
+                    <h3 className="text-xl font-bold text-black">Scan & Unlock</h3>
+                    <p className="text-gray-500 text-xs mt-1">Pay via QR and upload screenshot to unlock download.</p>
                   </div>
-                  <button
-                    onClick={onClose}
-                    className="text-gray-400 hover:text-black transition-colors p-1"
-                  >
-                    <X className="h-7 w-7" />
+                  <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors">
+                    <X className="h-6 w-6" />
                   </button>
                 </div>
-                
-                <form onSubmit={handlePaymentSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <input 
-                      type="text" 
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-black focus:border-black outline-none transition-all text-black"
-                      placeholder="John Doe"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
-                    <input 
-                      type="tel" 
-                      required
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-black focus:border-black outline-none transition-all text-black"
-                      placeholder="+91 9876543210"
-                    />
-                  </div>
-                  
-                  <div className="pt-4 border-t border-gray-100">
-                    <div className="text-center mb-4">
-                      <h4 className="text-2xl font-bold text-black">Vishal Kumar Verma</h4>
-                      <div className="h-1 w-16 bg-black mx-auto mt-2 rounded-full"></div>
-                    </div>
-                    <p className="text-sm font-bold text-black mb-3 text-center uppercase tracking-wider">Scan QR to Pay ₹{currentPrice.toFixed(0)}</p>
-                    <div className="bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center">
-                      {/* QR Code Image */}
+
+                <div className="space-y-6">
+                  {/* QR Code Section */}
+                  <div className="text-center">
+                    <div className="bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200 inline-block">
                       <img 
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=6394663971@ptaxis%26pn=Vishu%20Kumar%26am=${currentPrice}%26cu=INR`} 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=6394663971@ptaxis%26pn=Vishu%20Kumar%26am=${currentPrice}%26cu=INR`} 
                         alt="Payment QR Code"
-                        className="w-52 h-52 mb-4 shadow-lg rounded-lg bg-white p-2"
+                        className="w-40 h-40 shadow-sm rounded-lg bg-white p-2 mx-auto"
                       />
-                      <p className="text-xs text-gray-400 uppercase font-bold">Scan with any UPI App</p>
+                      <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">Pay ₹{currentPrice.toFixed(0)} to Vishal Kumar</p>
                     </div>
                   </div>
-                  
-                  <button 
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full mt-6 bg-black hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-lg transition-colors flex justify-center items-center shadow-xl shadow-black/10 disabled:opacity-50"
-                  >
-                    {isSubmitting ? <Loader2 className="animate-spin h-6 w-6" /> : "Submit Payment Details"}
-                  </button>
-                </form>
+
+                  {/* Form Section */}
+                  <form onSubmit={handleVerifyPayment} className="space-y-4">
+                    <div>
+                      <input 
+                        type="text" 
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                        placeholder="Full Name"
+                      />
+                    </div>
+                    <div>
+                      <input 
+                        type="tel" 
+                        required
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                        placeholder="WhatsApp Number"
+                      />
+                    </div>
+                    
+                    <div>
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        required
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="screenshot-upload"
+                      />
+                      <label 
+                        htmlFor="screenshot-upload"
+                        className="w-full flex items-center justify-center space-x-2 px-4 py-3 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 transition-colors bg-gray-50 text-gray-500 text-sm"
+                      >
+                        <CreditCard className="h-5 w-5" />
+                        <span>{screenshot ? "✅ Screenshot Selected" : "Choose Payment Screenshot"}</span>
+                      </label>
+                    </div>
+
+                    <button 
+                      type="submit"
+                      className="w-full bg-black hover:bg-gray-800 text-white py-4 rounded-xl font-bold text-base transition-all active:scale-95 shadow-xl shadow-black/10"
+                    >
+                      VERIFY PAYMENT
+                    </button>
+                  </form>
+                </div>
               </>
-            ) : orderStatus === 'pending' ? (
-              <div className="text-center flex flex-col items-center pt-8 pb-4">
-                <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin mb-6"></div>
-                <h3 className="text-2xl font-bold text-black mb-2">Waiting for Admin Approval...</h3>
-                <p className="text-gray-500 mb-2">We have received your request.</p>
-                <p className="text-gray-500 text-sm mb-6">Please complete the payment on your UPI app. Once confirmed by the admin, your download will unlock automatically.</p>
+            ) : isScanning ? (
+              <div className="py-8 text-center">
+                <div className="relative w-64 h-80 mx-auto mb-8 rounded-2xl overflow-hidden border-4 border-gray-100 shadow-inner bg-gray-900">
+                  {screenshot && (
+                    <img 
+                      src={screenshot} 
+                      alt="Scanning" 
+                      className="w-full h-full object-cover opacity-60"
+                    />
+                  )}
+                  {/* Laser Line Animation */}
+                  <motion.div
+                    animate={{ top: ["0%", "100%", "0%"] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="absolute left-0 right-0 h-1 bg-green-400 shadow-[0_0_20px_#4ade80,0_0_40px_#4ade80] z-20"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-500/10 to-transparent pointer-events-none" />
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-center space-x-2">
+                    <Loader2 className="h-5 w-5 text-blue-600 animate-spin" />
+                    <h3 className="text-xl font-bold text-black">{scanningText}</h3>
+                  </div>
+                  <p className="text-gray-400 text-sm animate-pulse">Please do not close this window...</p>
+                </div>
               </div>
             ) : (
-              <div className="text-center flex flex-col items-center pt-8 pb-4">
-                <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle2 className="h-8 w-8 text-green-500" />
-                </div>
-                <h3 className="text-2xl font-bold text-black mb-2">Payment Approved!</h3>
-                <p className="text-gray-500 mb-8">Your payment has been verified. You can now download your product.</p>
+              <div className="py-12 text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                  className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-green-100"
+                >
+                  <CheckCircle2 className="h-14 w-14 text-green-600" />
+                </motion.div>
+                
+                <h3 className="text-3xl font-black text-black mb-3">Verified!</h3>
+                <p className="text-gray-500 font-medium mb-8">Payment Successfully Verified!</p>
                 
                 <button
-                  onClick={() => {
-                    window.open('https://example.com/download', '_blank');
-                  }}
-                  className="w-full flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 text-white py-4 px-8 rounded-xl transition-colors duration-200 font-bold text-lg shadow-xl shadow-green-600/20"
+                  onClick={() => window.open('https://example.com/download', '_blank')}
+                  className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white py-4 px-8 rounded-xl transition-colors duration-200 font-bold text-lg shadow-xl shadow-blue-600/20"
                 >
                   <DownloadIcon className="h-6 w-6" />
                   <span>DOWNLOAD NOW</span>

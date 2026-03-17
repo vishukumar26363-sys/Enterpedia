@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ShoppingCart, ArrowLeft, FileText, Type, HardDrive, FileArchive, CheckCircle2, BookOpen, Download, X, CreditCard, Loader2 } from "lucide-react";
+import { ShoppingCart, ArrowLeft, FileText, Type, HardDrive, FileArchive, CheckCircle2, BookOpen, Download, X, CreditCard, Loader2, Bookmark } from "lucide-react";
 import { Product } from "../types";
 import { useWelcomeGift } from "../context/WelcomeGiftContext";
 import { motion } from "motion/react";
@@ -35,6 +35,29 @@ export default function ProductDetails({
   ];
 
   const [activeImage, setActiveImage] = useState(galleryImages[0]);
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('savedProducts');
+    if (saved) {
+      const savedArray = JSON.parse(saved);
+      setIsSaved(savedArray.includes(product.id));
+    }
+  }, [product.id]);
+
+  const toggleSave = () => {
+    const saved = localStorage.getItem('savedProducts');
+    let savedArray = saved ? JSON.parse(saved) : [];
+    
+    if (isSaved) {
+      savedArray = savedArray.filter((id: string) => id !== product.id);
+    } else {
+      savedArray.push(product.id);
+    }
+    
+    localStorage.setItem('savedProducts', JSON.stringify(savedArray));
+    setIsSaved(!isSaved);
+  };
 
   const licenseRights = [
     "Use in business",
@@ -60,13 +83,24 @@ export default function ProductDetails({
       <div className="bg-black text-white pt-24 pb-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-start">
           {/* Navigation */}
-          <button
-            onClick={onBack}
-            className="flex items-center space-x-2 text-gray-400 hover:text-white mb-8 transition-colors group"
-          >
-            <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-medium">Back to Library</span>
-          </button>
+          <div className="w-full flex justify-between items-center mb-8">
+            <button
+              onClick={onBack}
+              className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors group"
+            >
+              <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-medium">Back to Library</span>
+            </button>
+            
+            <button
+              onClick={toggleSave}
+              className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
+              aria-label={isSaved ? "Remove from saved" : "Save product"}
+            >
+              <Bookmark className={`h-5 w-5 ${isSaved ? "fill-white text-white" : ""}`} />
+              <span className="font-medium hidden sm:inline">{isSaved ? "Saved" : "Save"}</span>
+            </button>
+          </div>
 
           {/* Categories */}
           <div className="flex flex-wrap gap-3 mb-8">

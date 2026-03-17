@@ -19,6 +19,13 @@ body {
   background-image: linear-gradient(to right, #8b5cf6, #ec4899);
 }
 
+.text-gradient-logo {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(to bottom right, #ec4899, #9333ea);
+}
+
 .bg-gradient-primary {
   background-image: linear-gradient(to right, #8b5cf6, #ec4899);
 }

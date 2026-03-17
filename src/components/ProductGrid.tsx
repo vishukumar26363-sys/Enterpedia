@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Search } from "lucide-react";
+import { Search, Menu, ShoppingCart, ArrowRight } from "lucide-react";
 import { Product } from "../types";
 import { categories } from "../data";
 import ProductCard from "./ProductCard";
@@ -40,12 +40,33 @@ export default function ProductGrid({
     return matchesCategory && matchesSearch;
   });
 
+  const openBlankPage = () => {
+    document.body.innerHTML = '';
+    document.body.style.backgroundColor = 'white';
+  };
+
   return (
     <section
       id="products"
       className="py-24 bg-white relative overflow-hidden font-sans"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        
+        {/* New Black Box Header */}
+        <div className="w-full bg-black rounded-2xl flex items-center justify-between py-5 px-6 sm:px-8 mb-12 shadow-xl min-h-[80px]">
+          <div className="flex items-center max-w-[75%]">
+            <span className="text-white font-bold text-base sm:text-xl leading-tight">
+              Kickstart 2026 with special library offer
+            </span>
+          </div>
+          <button 
+            onClick={openBlankPage}
+            className="bg-[#E50914] text-white px-3 py-1 rounded-full font-bold text-[11px] sm:text-xs flex items-center gap-1 hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap"
+          >
+            Claim Deal <ArrowRight className="w-3 h-3" />
+          </button>
+        </div>
+
         <div className="flex flex-col items-center justify-center mb-12 gap-8 text-center">
           <div className="max-w-3xl mx-auto w-full">
             <h2 className="text-[28px] md:text-[42px] font-bold text-[#000000] mb-5 leading-tight">

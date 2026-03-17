@@ -54,7 +54,7 @@ async function startServer() {
 
   // API Routes
   app.post("/api/payment/submit", async (req, res) => {
-    const { name, whatsapp, productTitle, price } = req.body;
+    const { name, whatsapp, productTitle, price, screenshot } = req.body;
     const orderId = Math.random().toString(36).substring(2, 15);
     
     const newOrder = {
@@ -75,11 +75,22 @@ async function startServer() {
     const appUrl = rawAppUrl.replace(/\/$/, ''); // Remove trailing slash if any
     const approvalLink = `${appUrl}/api/payment/approve/${orderId}`;
     
+    // Prepare attachments if screenshot exists
+    const attachments = [];
+    if (screenshot && screenshot.includes('base64,')) {
+      attachments.push({
+        filename: `payment_screenshot_${orderId}.png`,
+        content: screenshot.split('base64,')[1],
+        encoding: 'base64'
+      });
+    }
+
     // Send Real Email
     const mailOptions = {
       from: `"Enterpedia Admin" <${process.env.EMAIL_USER || 'rajverma123orai@gmail.com'}>`,
       to: 'rajverma123orai@gmail.com',
       subject: `🚀 Enterpedia: New Order from ${name}`,
+      attachments,
       html: `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e7eb; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
           <div style="background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); color: #fff; padding: 32px 24px; text-align: center;">
@@ -96,6 +107,12 @@ async function startServer() {
               <p style="margin: 0 0 12px 0; font-size: 16px;"><strong>Product:</strong> ${productTitle}</p>
               <p style="margin: 0; font-size: 20px; color: #059669; font-weight: bold;"><strong>Amount:</strong> ₹${price}</p>
             </div>
+
+            ${screenshot ? `
+            <div style="margin-bottom: 32px; text-align: center;">
+              <p style="font-size: 14px; color: #6b7280; margin-bottom: 8px;">Payment Screenshot is attached to this email.</p>
+            </div>
+            ` : ''}
 
             <div style="text-align: center; margin-bottom: 32px;">
               <a href="${approvalLink}" style="display: inline-block; background: #000000; color: #ffffff; padding: 18px 40px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">

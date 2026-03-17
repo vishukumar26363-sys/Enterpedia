@@ -1,4 +1,5 @@
-import { ShoppingCart, Star, ExternalLink, Download, CreditCard } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ShoppingCart, Star, ExternalLink, Download, CreditCard, Bookmark } from "lucide-react";
 import { Product } from "../types";
 import { useWelcomeGift } from "../context/WelcomeGiftContext";
 
@@ -17,6 +18,37 @@ export default function ProductCard({
   onDownload,
 }: ProductCardProps) {
   const { isDiscountActive, discountPercentage } = useWelcomeGift();
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    const checkSaved = () => {
+      const saved = localStorage.getItem('savedProducts');
+      if (saved) {
+        const savedArray = JSON.parse(saved);
+        setIsSaved(savedArray.includes(product.id));
+      }
+    };
+
+    checkSaved();
+    window.addEventListener('savedProductsChanged', checkSaved);
+    return () => window.removeEventListener('savedProductsChanged', checkSaved);
+  }, [product.id]);
+
+  const toggleSave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const saved = localStorage.getItem('savedProducts');
+    let savedArray = saved ? JSON.parse(saved) : [];
+    
+    if (isSaved) {
+      savedArray = savedArray.filter((id: string) => id !== product.id);
+    } else {
+      savedArray.push(product.id);
+    }
+    
+    localStorage.setItem('savedProducts', JSON.stringify(savedArray));
+    setIsSaved(!isSaved);
+    window.dispatchEvent(new CustomEvent('savedProductsChanged'));
+  };
 
   const currentPrice = isDiscountActive
     ? product.price * (1 - discountPercentage / 100)
@@ -39,6 +71,17 @@ export default function ProductCard({
             {product.category}
           </span>
         </div>
+
+        {/* Save Icon */}
+        <button
+          onClick={toggleSave}
+          className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full text-black hover:bg-white transition-colors shadow-sm z-10"
+          aria-label={isSaved ? "Remove from saved" : "Save product"}
+        >
+          <Bookmark 
+            className={`h-4 w-4 transition-colors ${isSaved ? "fill-black text-black" : "text-black"}`} 
+          />
+        </button>
       </div>
 
       {/* Content */}
