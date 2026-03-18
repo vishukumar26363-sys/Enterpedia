@@ -10,6 +10,10 @@ import {
   Home,
   FileText,
   Bookmark,
+  ClipboardList,
+  Crown,
+  Lightbulb,
+  Folder,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
@@ -24,6 +28,7 @@ interface NavbarProps {
   onGoHome: () => void;
   onShowProducts: () => void;
   onShowSaved: () => void;
+  onShowRequest: () => void;
   onOpenContact: () => void;
   isProductPage?: boolean;
 }
@@ -39,6 +44,7 @@ export default function Navbar({
   onGoHome,
   onShowProducts,
   onShowSaved,
+  onShowRequest,
   onOpenContact,
   isProductPage = false,
 }: NavbarProps) {
@@ -259,10 +265,10 @@ export default function Navbar({
                   onGoHome();
                   setIsMenuOpen(false);
                 }}
-                className="w-full flex items-center px-5 py-2.5 text-white hover:bg-[#2a2a2a] transition-colors"
+                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
               >
-                <Home className="h-[18px] w-[18px] text-white" strokeWidth={1.5} />
-                <span className="text-sm font-medium ml-[15px] font-sans">Home</span>
+                <Home className="h-5 w-5 text-white" strokeWidth={2} />
+                <span className="text-sm font-semibold ml-4 font-sans">Home</span>
               </button>
 
               <button
@@ -270,10 +276,10 @@ export default function Navbar({
                   onShowProducts();
                   setIsMenuOpen(false);
                 }}
-                className="w-full flex items-center px-5 py-2.5 text-white hover:bg-[#2a2a2a] transition-colors"
+                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
               >
-                <FileText className="h-[18px] w-[18px] text-white" strokeWidth={1.5} />
-                <span className="text-sm font-medium ml-[15px] font-sans">Samples</span>
+                <Folder className="h-5 w-5 text-white" strokeWidth={2} />
+                <span className="text-sm font-semibold ml-4 font-sans">Samples</span>
               </button>
 
               <button
@@ -281,10 +287,32 @@ export default function Navbar({
                   onShowSaved();
                   setIsMenuOpen(false);
                 }}
-                className="w-full flex items-center px-5 py-2.5 text-white hover:bg-[#2a2a2a] transition-colors"
+                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
               >
-                <Bookmark className="h-[18px] w-[18px] text-white" strokeWidth={1.5} />
-                <span className="text-sm font-medium ml-[15px] font-sans">Saved</span>
+                <Bookmark className="h-5 w-5 text-white" strokeWidth={2} />
+                <span className="text-sm font-semibold ml-4 font-sans">Saved</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  onShowRequest();
+                  setIsMenuOpen(false);
+                }}
+                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
+              >
+                <Lightbulb className="h-5 w-5 text-white" strokeWidth={2} />
+                <span className="text-sm font-semibold ml-4 font-sans">Product Request</span>
+              </button>
+
+              <div className="px-5 my-2">
+                <div className="h-px bg-white/10 w-full"></div>
+              </div>
+
+              <button
+                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
+              >
+                <Crown className="h-5 w-5 text-white" strokeWidth={2} />
+                <span className="text-sm font-semibold ml-4 font-sans">Member Benefits</span>
               </button>
             </div>
           </div>
