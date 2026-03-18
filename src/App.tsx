@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb } from "lucide-react";
+import { ArrowLeft, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb, Search } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductGrid from "./components/ProductGrid";
@@ -21,6 +21,7 @@ import SalesNotification from "./components/SalesNotification";
 import { WelcomeGiftProvider } from "./context/WelcomeGiftContext";
 import { products } from "./data";
 import { plannedItems } from "./roadmapData";
+import { marketGapsData } from "./marketGapsData";
 import { Product, CartItem } from "./types";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
@@ -94,10 +95,37 @@ export default function App() {
   const [showSaved, setShowSaved] = useState(false);
   const [showRequestPage, setShowRequestPage] = useState(false);
   const [showMemberHub, setShowMemberHub] = useState(false);
+  const [showMarketGaps, setShowMarketGaps] = useState(false);
+  const [activeItem, setActiveItem] = useState('home');
+
+  // Market Gaps State
+  const [gapSearch, setGapSearch] = useState('');
+  const [gapIndustry, setGapIndustry] = useState('All Industries');
+  const [gapPotential, setGapPotential] = useState('Profit Potential');
+  const [gapDifficulty, setGapDifficulty] = useState('Difficulty');
+  const [gapPage, setGapPage] = useState(1);
+  const [selectedGap, setSelectedGap] = useState<any>(null);
+  const gapsPerPage = 12;
+
+  // Filtered Gaps Logic
+  const filteredGaps = marketGapsData.filter(gap => {
+    const matchesSearch = gap.title.toLowerCase().includes(gapSearch.toLowerCase()) || 
+                         gap.id.toLowerCase().includes(gapSearch.toLowerCase());
+    const matchesIndustry = gapIndustry === 'All Industries' || gap.industry === gapIndustry;
+    const matchesPotential = gapPotential === 'Profit Potential' || gap.potential === gapPotential;
+    const matchesDifficulty = gapDifficulty === 'Difficulty' || gap.difficulty === gapDifficulty;
+    
+    return matchesSearch && matchesIndustry && matchesPotential && matchesDifficulty;
+  });
+
+  const totalPages = Math.ceil(filteredGaps.length / gapsPerPage);
+  const currentGaps = filteredGaps.slice((gapPage - 1) * gapsPerPage, gapPage * gapsPerPage);
+
   const [isSubscribed, setIsSubscribed] = useState(false); // Mock subscription state
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
   const [savedItems, setSavedItems] = useState<Product[]>([]);
+  const [savedGaps, setSavedGaps] = useState<any[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -106,8 +134,53 @@ export default function App() {
       const savedIds = JSON.parse(localStorage.getItem('savedProducts') || '[]');
       const savedProducts = products.filter(p => savedIds.includes(p.id));
       setSavedItems(savedProducts);
+
+      const savedGapIds = JSON.parse(localStorage.getItem('savedGaps') || '[]');
+      const savedGapsList = marketGapsData.filter(g => savedGapIds.includes(g.id));
+      setSavedGaps(savedGapsList);
     }
   }, [showSaved, products]);
+
+  const handleDownloadReport = (gap: any) => {
+    const reportContent = `
+ENTERPEDIA - MARKET GAP REPORT
+------------------------------
+ID: ${gap.id}
+TITLE: ${gap.title}
+STATUS: ${gap.status}
+MARKET SIZE: ${gap.market}
+INDUSTRY: ${gap.industry}
+DIFFICULTY: ${gap.difficulty}
+POTENTIAL: ${gap.potential}
+
+SOLUTION STRATEGY:
+${gap.strategy}
+
+------------------------------
+Generated on: ${new Date().toLocaleString()}
+© 2026 Enterpedia. All rights reserved.
+    `;
+    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Enterpedia_Report_${gap.id}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleSaveGap = (gap: any) => {
+    const savedGapIds = JSON.parse(localStorage.getItem('savedGaps') || '[]');
+    if (!savedGapIds.includes(gap.id)) {
+      const newSavedIds = [...savedGapIds, gap.id];
+      localStorage.setItem('savedGaps', JSON.stringify(newSavedIds));
+      alert('Gap saved to your library!');
+    } else {
+      alert('This gap is already in your library.');
+    }
+  };
 
   const [downloadProduct, setDownloadProduct] = useState<Product | null>(null);
 
@@ -188,21 +261,27 @@ export default function App() {
             setShowSamplesPage(false);
             setShowSaved(false);
             setShowRequestPage(false);
+            setShowMemberHub(false);
             setSelectedProduct(null);
+            setActiveItem('home');
           }}
           onShowProducts={() => {
             setShowSamplesPage(true);
             setShowProducts(false);
             setShowSaved(false);
             setShowRequestPage(false);
+            setShowMemberHub(false);
             setSelectedProduct(null);
+            setActiveItem('samples');
           }}
           onShowSaved={() => {
             setShowSaved(true);
             setShowSamplesPage(false);
             setShowProducts(false);
             setShowRequestPage(false);
+            setShowMemberHub(false);
             setSelectedProduct(null);
+            setActiveItem('saved');
           }}
           onShowRequest={() => {
             setShowRequestPage(true);
@@ -211,12 +290,36 @@ export default function App() {
             setShowSamplesPage(false);
             setShowProducts(false);
             setSelectedProduct(null);
+            setActiveItem('request');
           }}
           onShowMemberHub={() => {
-            setShowMemberHub(true);
+            setActiveItem('memberhub');
             if (!isSubscribed) {
               setIsUpgradeModalOpen(true);
+              // CRITICAL: Do not set showMemberHub(true) for free users
+              // Background remains Home
+              setShowProducts(false);
+              setShowSamplesPage(false);
+              setShowSaved(false);
+              setShowRequestPage(false);
+              setShowMemberHub(false);
+              setShowMarketGaps(false);
+              setSelectedProduct(null);
+            } else {
+              setShowMemberHub(true);
+              setShowMarketGaps(false);
+              setShowRequestPage(false);
+              setShowSaved(false);
+              setShowSamplesPage(false);
+              setShowProducts(false);
+              setSelectedProduct(null);
             }
+          }}
+          onShowMarketGaps={() => {
+            setActiveItem('marketgaps');
+            // Temporarily disabled gate to show the page
+            setShowMarketGaps(true);
+            setShowMemberHub(false);
             setShowRequestPage(false);
             setShowSaved(false);
             setShowSamplesPage(false);
@@ -224,11 +327,12 @@ export default function App() {
             setSelectedProduct(null);
           }}
           onOpenContact={() => setIsContactModalOpen(true)}
-          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage || showMemberHub}
+          activeItem={activeItem}
+          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage || showMemberHub || showMarketGaps}
         />
 
         <main className="flex-grow">
-          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub ? 'block' : 'none' }}>
+          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub && !showMarketGaps ? 'block' : 'none' }}>
             {selectedProduct ? (
               <ProductDetails
                 product={selectedProduct}
@@ -316,33 +420,93 @@ export default function App() {
                 </p>
               </div>
 
-              {savedItems.length === 0 ? (
+              {savedItems.length === 0 && savedGaps.length === 0 ? (
                 <div className="border border-slate-200 rounded-2xl p-20 text-center max-w-2xl mx-auto">
-                  <p className="font-bold text-slate-900 mb-2">No saved products yet</p>
-                  <p className="text-slate-500 text-sm">Products you bookmark will appear here for easy access.</p>
+                  <p className="font-bold text-slate-900 mb-2">No saved items yet</p>
+                  <p className="text-slate-500 text-sm">Products and Market Gaps you bookmark will appear here for easy access.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {savedItems.map(item => (
-                     <div key={item.id} className="border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow relative">
-                       <button
-                         onClick={() => {
-                           const saved = localStorage.getItem('savedProducts');
-                           let savedArray = saved ? JSON.parse(saved) : [];
-                           savedArray = savedArray.filter((id: string) => id !== item.id);
-                           localStorage.setItem('savedProducts', JSON.stringify(savedArray));
-                           window.dispatchEvent(new CustomEvent('savedProductsChanged'));
-                           setSavedItems(savedItems.filter(p => p.id !== item.id));
-                         }}
-                         className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-sm border border-slate-100 hover:bg-slate-50"
-                       >
-                         <Bookmark className="h-4 w-4 fill-black text-black" />
-                       </button>
-                       <img src={item.imageUrl} alt={item.title} className="w-full h-48 object-cover rounded-lg mb-4" />
-                       <h3 className="font-bold text-slate-900 mb-1">{item.title}</h3>
-                       <p className="text-violet-600 font-semibold">₹{item.price.toFixed(0)}</p>
-                     </div>
-                  ))}
+                <div className="space-y-12">
+                  {savedItems.length > 0 && (
+                    <div>
+                      <h2 className="text-2xl font-bold text-black mb-6 flex items-center gap-2">
+                        <Bookmark className="h-6 w-6 text-violet-500" />
+                        Saved Products
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {savedItems.map(item => (
+                           <div key={item.id} className="border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow relative">
+                             <button
+                               onClick={() => {
+                                 const saved = localStorage.getItem('savedProducts');
+                                 let savedArray = saved ? JSON.parse(saved) : [];
+                                 savedArray = savedArray.filter((id: string) => id !== item.id);
+                                 localStorage.setItem('savedProducts', JSON.stringify(savedArray));
+                                 window.dispatchEvent(new CustomEvent('savedProductsChanged'));
+                                 setSavedItems(savedItems.filter(p => p.id !== item.id));
+                               }}
+                               className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-sm border border-slate-100 hover:bg-slate-50 z-10"
+                             >
+                               <Bookmark className="h-4 w-4 fill-black text-black" />
+                             </button>
+                             <img src={item.imageUrl} alt={item.title} className="w-full h-48 object-cover rounded-lg mb-4" />
+                             <h3 className="font-bold text-slate-900 mb-1">{item.title}</h3>
+                             <p className="text-violet-600 font-semibold">₹{item.price.toFixed(0)}</p>
+                           </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {savedGaps.length > 0 && (
+                    <div>
+                      <h2 className="text-2xl font-bold text-black mb-6 flex items-center gap-2">
+                        <Search className="h-6 w-6 text-emerald-500" />
+                        Saved Market Gaps
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {savedGaps.map(gap => (
+                          <div key={gap.id} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group relative">
+                            <button
+                              onClick={() => {
+                                const saved = localStorage.getItem('savedGaps');
+                                let savedArray = saved ? JSON.parse(saved) : [];
+                                savedArray = savedArray.filter((id: string) => id !== gap.id);
+                                localStorage.setItem('savedGaps', JSON.stringify(savedArray));
+                                setSavedGaps(savedGaps.filter(g => g.id !== gap.id));
+                              }}
+                              className="absolute top-4 right-4 p-1.5 bg-white rounded-full shadow-sm border border-gray-100 hover:bg-gray-50 z-10"
+                            >
+                              <Bookmark className="h-4 w-4 fill-emerald-500 text-emerald-500" />
+                            </button>
+                            <div className="flex justify-between items-start mb-4">
+                              <span className="text-[10px] font-bold text-gray-400 tracking-widest">{gap.id}</span>
+                              <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${gap.status === 'Unsolved' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                                {gap.status}
+                              </span>
+                            </div>
+                            <h3 className="font-bold text-base text-black mb-3 leading-tight group-hover:text-[#F15B5B] transition-colors">
+                              {gap.title}
+                            </h3>
+                            <div className="flex items-center gap-2 mb-5">
+                              <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+                              <span className="text-xs font-bold text-gray-500">{gap.market}</span>
+                            </div>
+                            <button 
+                              onClick={() => {
+                                setSelectedGap(gap);
+                                setShowMarketGaps(true);
+                                setShowSaved(false);
+                              }}
+                              className="w-full py-2.5 rounded-xl border-2 border-[#F15B5B] text-[#F15B5B] text-xs font-bold hover:bg-[#F15B5B] hover:text-white transition-all"
+                            >
+                              View Strategy
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -473,7 +637,10 @@ export default function App() {
                 className="max-w-7xl mx-auto p-4 relative min-h-screen"
               >
                 <button 
-                  onClick={() => setShowMemberHub(false)}
+                  onClick={() => {
+                    setShowMemberHub(false);
+                    setActiveItem('home');
+                  }}
                   className="absolute top-4 right-4 p-2 text-gray-400 hover:text-black z-10"
                 >
                   <X className="h-6 w-6" />
@@ -575,6 +742,269 @@ export default function App() {
           </AnimatePresence>
         </div>
 
+        <div id="market-gaps-page" style={{ display: showMarketGaps ? 'block' : 'none', background: '#F4F7F6', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 100, overflowY: 'auto' }}>
+          <AnimatePresence>
+            {showMarketGaps && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="max-w-[1600px] mx-auto p-6 relative min-h-screen"
+              >
+                <button 
+                  onClick={() => {
+                    setShowMarketGaps(false);
+                    setActiveItem('home');
+                  }}
+                  className="absolute top-6 right-8 p-2 text-gray-400 hover:text-black z-[110] bg-white rounded-full shadow-sm"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+
+                {/* Header Section */}
+                <div className="pt-12 pb-8">
+                  <div className="flex items-center gap-4 mb-2">
+                    <h1 className="text-4xl font-[900] text-black tracking-tight">1000+ Evergreen Market Gaps</h1>
+                    <div className="bg-black text-white px-3 py-1 rounded-full text-[11px] font-bold">
+                      Total: {filteredGaps.length} Gaps Found
+                    </div>
+                  </div>
+                  <p className="text-gray-500 text-lg font-medium">
+                    The world's largest database of unsolved business problems.
+                  </p>
+                </div>
+
+                {/* Advanced Filter & Search Bar */}
+                <div className="flex flex-wrap gap-4 mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                  <div className="flex-1 min-w-[300px] relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input 
+                      type="text" 
+                      placeholder="Search Gap..." 
+                      value={gapSearch}
+                      onChange={(e) => {
+                        setGapSearch(e.target.value);
+                        setGapPage(1);
+                      }}
+                      className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/5 transition-all"
+                    />
+                  </div>
+                  <select 
+                    value={gapIndustry}
+                    onChange={(e) => {
+                      setGapIndustry(e.target.value);
+                      setGapPage(1);
+                    }}
+                    className="px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 min-w-[160px] focus:outline-none"
+                  >
+                    <option>All Industries</option>
+                    <option>SaaS</option>
+                    <option>E-commerce</option>
+                    <option>AI/ML</option>
+                    <option>HealthTech</option>
+                  </select>
+                  <select 
+                    value={gapPotential}
+                    onChange={(e) => {
+                      setGapPotential(e.target.value);
+                      setGapPage(1);
+                    }}
+                    className="px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 min-w-[160px] focus:outline-none"
+                  >
+                    <option>Profit Potential</option>
+                    <option>High ($1M+)</option>
+                    <option>Very High ($10M+)</option>
+                    <option>Unicorn ($1B+)</option>
+                  </select>
+                  <select 
+                    value={gapDifficulty}
+                    onChange={(e) => {
+                      setGapDifficulty(e.target.value);
+                      setGapPage(1);
+                    }}
+                    className="px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 min-w-[160px] focus:outline-none"
+                  >
+                    <option>Difficulty</option>
+                    <option>Easy</option>
+                    <option>Medium</option>
+                    <option>Hard</option>
+                  </select>
+                </div>
+
+                {/* High-Density Data Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-12 min-h-[600px]">
+                  {currentGaps.length > 0 ? currentGaps.map((gap, idx) => (
+                    <div key={idx} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group">
+                      <div className="flex justify-between items-start mb-4">
+                        <span className="text-[10px] font-bold text-gray-400 tracking-widest">{gap.id}</span>
+                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${gap.status === 'Unsolved' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                          {gap.status}
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-base text-black mb-3 leading-tight group-hover:text-[#F15B5B] transition-colors">
+                        {gap.title}
+                      </h3>
+                      <div className="flex items-center gap-2 mb-5">
+                        <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+                        <span className="text-xs font-bold text-gray-500">{gap.market}</span>
+                      </div>
+                      <button 
+                        onClick={() => setSelectedGap(gap)}
+                        className="w-full py-2.5 rounded-xl border-2 border-[#F15B5B] text-[#F15B5B] text-xs font-bold hover:bg-[#F15B5B] hover:text-white transition-all"
+                      >
+                        View Solution Strategy
+                      </button>
+                    </div>
+                  )) : (
+                    <div className="col-span-full flex flex-col items-center justify-center py-20">
+                      <Search className="h-12 w-12 text-gray-200 mb-4" />
+                      <p className="text-gray-400 font-bold">No market gaps found matching your filters.</p>
+                      <button 
+                        onClick={() => {
+                          setGapSearch('');
+                          setGapIndustry('All Industries');
+                          setGapPotential('Profit Potential');
+                          setGapDifficulty('Difficulty');
+                        }}
+                        className="mt-4 text-[#F15B5B] text-sm font-bold hover:underline"
+                      >
+                        Clear all filters
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Pagination Section */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 pb-20">
+                    <button 
+                      onClick={() => setGapPage(prev => Math.max(1, prev - 1))}
+                      disabled={gapPage === 1}
+                      className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:text-black disabled:opacity-50 transition-colors"
+                    >
+                      Prev
+                    </button>
+                    
+                    {[...Array(totalPages)].map((_, i) => {
+                      const pageNum = i + 1;
+                      // Show first, last, and current page surroundings
+                      if (
+                        pageNum === 1 || 
+                        pageNum === totalPages || 
+                        (pageNum >= gapPage - 2 && pageNum <= gapPage + 2)
+                      ) {
+                        return (
+                          <button 
+                            key={pageNum}
+                            onClick={() => setGapPage(pageNum)}
+                            className={`w-10 h-10 rounded-lg text-sm font-bold transition-all ${gapPage === pageNum ? 'bg-black text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      }
+                      // Show dots
+                      if (pageNum === 2 || pageNum === totalPages - 1) {
+                        return <span key={pageNum} className="text-gray-400 font-bold px-1">...</span>;
+                      }
+                      return null;
+                    })}
+
+                    <button 
+                      onClick={() => setGapPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={gapPage === totalPages}
+                      className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:text-black disabled:opacity-50 transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+
+                {/* Strategy Modal */}
+                <AnimatePresence>
+                  {selectedGap && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+                    >
+                      <motion.div 
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                        className="bg-white rounded-[32px] p-8 max-w-2xl w-full relative shadow-2xl overflow-hidden"
+                      >
+                        <button 
+                          onClick={() => setSelectedGap(null)}
+                          className="absolute top-6 right-6 p-2 text-gray-400 hover:text-black bg-gray-50 rounded-full transition-colors"
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                            {selectedGap.status}
+                          </div>
+                          <span className="text-[10px] font-bold text-gray-400 tracking-widest">{selectedGap.id}</span>
+                        </div>
+
+                        <h2 className="text-3xl font-[900] text-black mb-4 leading-tight">
+                          {selectedGap.title}
+                        </h2>
+
+                        <div className="grid grid-cols-3 gap-4 mb-8">
+                          <div className="bg-gray-50 p-4 rounded-2xl">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Market Size</p>
+                            <p className="text-sm font-bold text-black">{selectedGap.market}</p>
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-2xl">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Industry</p>
+                            <p className="text-sm font-bold text-black">{selectedGap.industry}</p>
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-2xl">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Difficulty</p>
+                            <p className="text-sm font-bold text-black">{selectedGap.difficulty}</p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-6">
+                          <div>
+                            <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
+                              <Zap className="h-5 w-5 text-[#F15B5B]" />
+                              Solution Strategy
+                            </h3>
+                            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                              <p className="text-slate-600 leading-relaxed font-medium">
+                                {selectedGap.strategy}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-4">
+                            <button 
+                              onClick={() => handleDownloadReport(selectedGap)}
+                              className="flex-1 py-4 bg-black text-white rounded-2xl font-bold hover:bg-slate-900 transition-all shadow-lg shadow-black/10"
+                            >
+                              Download Full Report
+                            </button>
+                            <button 
+                              onClick={() => handleSaveGap(selectedGap)}
+                              className="flex-1 py-4 border-2 border-gray-100 text-black rounded-2xl font-bold hover:bg-gray-50 transition-all"
+                            >
+                              Save to Library
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         {/* Upgrade Modal */}
         <AnimatePresence>
           {isUpgradeModalOpen && (
@@ -590,13 +1020,19 @@ export default function App() {
                 exit={{ scale: 0.95, opacity: 0 }}
                 className="bg-white rounded-[32px] p-8 max-w-sm w-full relative shadow-2xl"
               >
-                <button onClick={() => setIsUpgradeModalOpen(false)} className="absolute top-6 right-6 text-gray-400 hover:text-black">
+                <button 
+                  onClick={() => {
+                    setIsUpgradeModalOpen(false);
+                    setActiveItem('home');
+                  }} 
+                  className="absolute top-6 right-6 text-gray-400 hover:text-black"
+                >
                   <X className="h-5 w-5" />
                 </button>
                 
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 rounded-full text-[10px] font-bold text-gray-600 tracking-wider mb-4">
-                    👑 PREMIUM FEATURE
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 rounded-full text-[10px] font-bold text-amber-600 tracking-wider mb-4 border border-amber-100">
+                    <Crown className="h-3 w-3" /> MASTER LIFETIME ONLY
                   </div>
                   <h2 className="text-2xl font-extrabold text-black mb-3">Unlock Member Benefits</h2>
                   <p className="text-gray-500 text-sm mx-auto max-w-[280px]">Get exclusive access to premium SaaS deals and discounts available only to Master Lifetime members.</p>
@@ -644,7 +1080,10 @@ export default function App() {
                 </div>
                 
                 <button
-                  onClick={() => setIsUpgradeModalOpen(false)}
+                  onClick={() => {
+                    setIsUpgradeModalOpen(false);
+                    setActiveItem('home');
+                  }}
                   className="block w-full text-center text-xs text-gray-400 underline hover:text-gray-600"
                 >
                   Maybe later

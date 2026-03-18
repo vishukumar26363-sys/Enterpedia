@@ -30,7 +30,9 @@ interface NavbarProps {
   onShowSaved: () => void;
   onShowRequest: () => void;
   onShowMemberHub: () => void;
+  onShowMarketGaps: () => void;
   onOpenContact: () => void;
+  activeItem?: string;
   isProductPage?: boolean;
 }
 
@@ -47,7 +49,9 @@ export default function Navbar({
   onShowSaved,
   onShowRequest,
   onShowMemberHub,
+  onShowMarketGaps,
   onOpenContact,
+  activeItem = 'home',
   isProductPage = false,
 }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -267,9 +271,9 @@ export default function Navbar({
                   onGoHome();
                   setIsMenuOpen(false);
                 }}
-                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'home' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
               >
-                <Home className="h-5 w-5 text-white" strokeWidth={2} />
+                <Home className="h-5 w-5" strokeWidth={2} />
                 <span className="text-sm font-semibold ml-4 font-sans">Home</span>
               </button>
 
@@ -278,9 +282,9 @@ export default function Navbar({
                   onShowProducts();
                   setIsMenuOpen(false);
                 }}
-                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'samples' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
               >
-                <Folder className="h-5 w-5 text-white" strokeWidth={2} />
+                <Folder className="h-5 w-5" strokeWidth={2} />
                 <span className="text-sm font-semibold ml-4 font-sans">Samples</span>
               </button>
 
@@ -289,9 +293,9 @@ export default function Navbar({
                   onShowSaved();
                   setIsMenuOpen(false);
                 }}
-                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'saved' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
               >
-                <Bookmark className="h-5 w-5 text-white" strokeWidth={2} />
+                <Bookmark className="h-5 w-5" strokeWidth={2} />
                 <span className="text-sm font-semibold ml-4 font-sans">Saved</span>
               </button>
 
@@ -300,9 +304,9 @@ export default function Navbar({
                   onShowRequest();
                   setIsMenuOpen(false);
                 }}
-                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'request' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
               >
-                <Lightbulb className="h-5 w-5 text-white" strokeWidth={2} />
+                <Lightbulb className="h-5 w-5" strokeWidth={2} />
                 <span className="text-sm font-semibold ml-4 font-sans">Product Request</span>
               </button>
 
@@ -315,10 +319,24 @@ export default function Navbar({
                   onShowMemberHub();
                   setIsMenuOpen(false);
                 }}
-                className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'memberhub' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
               >
-                <Crown className="h-5 w-5 text-white" strokeWidth={2} />
+                <Crown className="h-5 w-5" strokeWidth={2} />
                 <span className="text-sm font-semibold ml-4 font-sans">Member Benefits</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  onShowMarketGaps();
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'marketgaps' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
+              >
+                <Search className="h-5 w-5" strokeWidth={2} />
+                <div className="flex items-center justify-between flex-1 ml-4">
+                  <span className="text-sm font-semibold font-sans">Market Gaps</span>
+                  <span className="bg-[#FF4B4B] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md leading-none">NEW</span>
+                </div>
               </button>
             </div>
           </div>
