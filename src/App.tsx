@@ -142,9 +142,13 @@ export default function App() {
   }, [showSaved, products]);
 
   const handleDownloadReport = (gap: any) => {
+    if (!isSubscribed) {
+      setIsUpgradeModalOpen(true);
+      return;
+    }
     const reportContent = `
-ENTERPEDIA - MARKET GAP REPORT
-------------------------------
+ENTERPEDIA CONFIDENTIAL - RESEARCH REPORT
+==========================================
 ID: ${gap.id}
 TITLE: ${gap.title}
 STATUS: ${gap.status}
@@ -153,10 +157,14 @@ INDUSTRY: ${gap.industry}
 DIFFICULTY: ${gap.difficulty}
 POTENTIAL: ${gap.potential}
 
-SOLUTION STRATEGY:
-${gap.strategy}
+${Object.values(gap.sections).map((section: any) => `
+${section.heading}
+------------------------------------------
+${section.content}
+`).join('\n')}
 
-------------------------------
+==========================================
+WATERMARK: ENTERPEDIA CONFIDENTIAL
 Generated on: ${new Date().toLocaleString()}
 © 2026 Enterpedia. All rights reserved.
     `;
@@ -164,7 +172,7 @@ Generated on: ${new Date().toLocaleString()}
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Enterpedia_Report_${gap.id}.txt`;
+    a.download = `Enterpedia_Research_Report_${gap.id}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -837,8 +845,8 @@ Generated on: ${new Date().toLocaleString()}
                     <div key={idx} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all group">
                       <div className="flex justify-between items-start mb-4">
                         <span className="text-[10px] font-bold text-gray-400 tracking-widest">{gap.id}</span>
-                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${gap.status === 'Unsolved' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                          {gap.status}
+                        <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 text-[9px] font-bold uppercase flex items-center gap-1">
+                          <Check className="h-2 w-2" /> Verified Research
                         </span>
                       </div>
                       <h3 className="font-bold text-base text-black mb-3 leading-tight group-hover:text-[#F15B5B] transition-colors">
@@ -933,68 +941,108 @@ Generated on: ${new Date().toLocaleString()}
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                        className="bg-white rounded-[32px] p-8 max-w-2xl w-full relative shadow-2xl overflow-hidden"
+                        className="bg-white rounded-[32px] p-8 max-w-3xl w-full relative shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
                       >
                         <button 
                           onClick={() => setSelectedGap(null)}
-                          className="absolute top-6 right-6 p-2 text-gray-400 hover:text-black bg-gray-50 rounded-full transition-colors"
+                          className="absolute top-6 right-6 p-2 text-gray-400 hover:text-black bg-gray-50 rounded-full transition-colors z-20"
                         >
                           <X className="h-5 w-5" />
                         </button>
 
-                        <div className="flex items-center gap-3 mb-6">
-                          <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                            {selectedGap.status}
+                        <div className="overflow-y-auto pr-2 custom-scrollbar">
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                              <Check className="h-2.5 w-2.5" /> Verified Research
+                            </div>
+                            <span className="text-[10px] font-bold text-gray-400 tracking-widest">{selectedGap.id}</span>
                           </div>
-                          <span className="text-[10px] font-bold text-gray-400 tracking-widest">{selectedGap.id}</span>
-                        </div>
 
-                        <h2 className="text-3xl font-[900] text-black mb-4 leading-tight">
-                          {selectedGap.title}
-                        </h2>
+                          <h2 className="text-3xl font-[900] text-black mb-4 leading-tight">
+                            {selectedGap.title}
+                          </h2>
 
-                        <div className="grid grid-cols-3 gap-4 mb-8">
-                          <div className="bg-gray-50 p-4 rounded-2xl">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Market Size</p>
-                            <p className="text-sm font-bold text-black">{selectedGap.market}</p>
-                          </div>
-                          <div className="bg-gray-50 p-4 rounded-2xl">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Industry</p>
-                            <p className="text-sm font-bold text-black">{selectedGap.industry}</p>
-                          </div>
-                          <div className="bg-gray-50 p-4 rounded-2xl">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Difficulty</p>
-                            <p className="text-sm font-bold text-black">{selectedGap.difficulty}</p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-6">
-                          <div>
-                            <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
-                              <Zap className="h-5 w-5 text-[#F15B5B]" />
-                              Solution Strategy
-                            </h3>
-                            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                              <p className="text-slate-600 leading-relaxed font-medium">
-                                {selectedGap.strategy}
-                              </p>
+                          <div className="grid grid-cols-3 gap-4 mb-8">
+                            <div className="bg-gray-50 p-4 rounded-2xl">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Market Size</p>
+                              <p className="text-sm font-bold text-black">{selectedGap.market}</p>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded-2xl">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Industry</p>
+                              <p className="text-sm font-bold text-black">{selectedGap.industry}</p>
+                            </div>
+                            <div className="bg-gray-50 p-4 rounded-2xl">
+                              <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Difficulty</p>
+                              <p className="text-sm font-bold text-black">{selectedGap.difficulty}</p>
                             </div>
                           </div>
 
-                          <div className="flex gap-4">
-                            <button 
-                              onClick={() => handleDownloadReport(selectedGap)}
-                              className="flex-1 py-4 bg-black text-white rounded-2xl font-bold hover:bg-slate-900 transition-all shadow-lg shadow-black/10"
-                            >
-                              Download Full Report
-                            </button>
-                            <button 
-                              onClick={() => handleSaveGap(selectedGap)}
-                              className="flex-1 py-4 border-2 border-gray-100 text-black rounded-2xl font-bold hover:bg-gray-50 transition-all"
-                            >
-                              Save to Library
-                            </button>
+                          <div className="space-y-8 relative">
+                            {/* Section 1 - Always Visible (Snippet for free) */}
+                            <div>
+                              <h3 className="text-lg font-bold text-black mb-3 flex items-center gap-2">
+                                <Zap className="h-5 w-5 text-[#F15B5B]" />
+                                {selectedGap.sections.section1.heading}
+                              </h3>
+                              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                <p className="text-slate-600 leading-relaxed font-medium">
+                                  {isSubscribed ? selectedGap.sections.section1.content : `${selectedGap.sections.section1.content.substring(0, 150)}...`}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Blurred Sections for Free Users */}
+                            <div className={!isSubscribed ? 'blur-md select-none pointer-events-none' : ''}>
+                              {[selectedGap.sections.section2, selectedGap.sections.section3, selectedGap.sections.section4, selectedGap.sections.section5, selectedGap.sections.section6].map((section, i) => (
+                                <div key={i} className="mt-8">
+                                  <h3 className="text-lg font-bold text-black mb-3">
+                                    {section.heading}
+                                  </h3>
+                                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                    <p className="text-slate-600 leading-relaxed font-medium">
+                                      {section.content}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Unlock Overlay for Free Users */}
+                            {!isSubscribed && (
+                              <div className="absolute inset-x-0 bottom-0 top-[150px] flex flex-col items-center justify-center bg-gradient-to-t from-white via-white/90 to-transparent pt-20 pb-10 z-10">
+                                <div className="bg-white p-8 rounded-[32px] shadow-2xl border border-gray-100 text-center max-w-md mx-auto">
+                                  <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Crown className="h-8 w-8 text-amber-500" />
+                                  </div>
+                                  <h4 className="text-2xl font-black text-black mb-3">Unlock 1000+ Words Research</h4>
+                                  <p className="text-gray-500 text-sm mb-8">This is a premium deep-research report. Upgrade to Master Lifetime to access full execution roadmaps, tech stacks, and monetization strategies.</p>
+                                  <button 
+                                    onClick={() => setIsUpgradeModalOpen(true)}
+                                    className="w-full py-4 bg-black text-white rounded-2xl font-bold hover:bg-slate-900 transition-all shadow-xl shadow-black/20 flex items-center justify-center gap-2"
+                                  >
+                                    <Crown className="h-5 w-5 text-amber-400" />
+                                    Upgrade to Download Full Report
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
+                        </div>
+
+                        <div className="flex gap-4 mt-8 pt-6 border-t border-gray-100 bg-white">
+                          <button 
+                            onClick={() => handleDownloadReport(selectedGap)}
+                            className="flex-1 py-4 bg-black text-white rounded-2xl font-bold hover:bg-slate-900 transition-all shadow-lg shadow-black/10 flex items-center justify-center gap-2"
+                          >
+                            <ArrowDown className="h-5 w-5" />
+                            Download Full 1000+ Words Report
+                          </button>
+                          <button 
+                            onClick={() => handleSaveGap(selectedGap)}
+                            className="flex-1 py-4 border-2 border-gray-100 text-black rounded-2xl font-bold hover:bg-gray-50 transition-all"
+                          >
+                            Save to Library
+                          </button>
                         </div>
                       </motion.div>
                     </motion.div>
