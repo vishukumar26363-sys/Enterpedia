@@ -29,6 +29,7 @@ interface NavbarProps {
   onShowProducts: () => void;
   onShowSaved: () => void;
   onShowRequest: () => void;
+  onShowMemberHub: () => void;
   onOpenContact: () => void;
   isProductPage?: boolean;
 }
@@ -45,6 +46,7 @@ export default function Navbar({
   onShowProducts,
   onShowSaved,
   onShowRequest,
+  onShowMemberHub,
   onOpenContact,
   isProductPage = false,
 }: NavbarProps) {
@@ -309,6 +311,10 @@ export default function Navbar({
               </div>
 
               <button
+                onClick={() => {
+                  onShowMemberHub();
+                  setIsMenuOpen(false);
+                }}
                 className="w-full flex items-center px-5 py-3 text-white hover:bg-[#2a2a2a] transition-colors"
               >
                 <Crown className="h-5 w-5 text-white" strokeWidth={2} />

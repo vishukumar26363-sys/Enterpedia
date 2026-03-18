@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar } from "lucide-react";
+import { ArrowLeft, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductGrid from "./components/ProductGrid";
@@ -93,6 +93,7 @@ export default function App() {
   const [showSamplesPage, setShowSamplesPage] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
   const [showRequestPage, setShowRequestPage] = useState(false);
+  const [showMemberHub, setShowMemberHub] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false); // Mock subscription state
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
@@ -205,17 +206,29 @@ export default function App() {
           }}
           onShowRequest={() => {
             setShowRequestPage(true);
+            setShowMemberHub(false);
+            setShowSaved(false);
+            setShowSamplesPage(false);
+            setShowProducts(false);
+            setSelectedProduct(null);
+          }}
+          onShowMemberHub={() => {
+            setShowMemberHub(true);
+            if (!isSubscribed) {
+              setIsUpgradeModalOpen(true);
+            }
+            setShowRequestPage(false);
             setShowSaved(false);
             setShowSamplesPage(false);
             setShowProducts(false);
             setSelectedProduct(null);
           }}
           onOpenContact={() => setIsContactModalOpen(true)}
-          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage}
+          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage || showMemberHub}
         />
 
         <main className="flex-grow">
-          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage ? 'block' : 'none' }}>
+          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub ? 'block' : 'none' }}>
             {selectedProduct ? (
               <ProductDetails
                 product={selectedProduct}
@@ -450,6 +463,118 @@ export default function App() {
           </div>
         </div>
 
+        <div id="member-hub-page" style={{ display: showMemberHub ? 'block' : 'none', background: '#f8fafc', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 100, overflowY: 'auto' }}>
+          <AnimatePresence>
+            {showMemberHub && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="max-w-7xl mx-auto p-4 relative min-h-screen"
+              >
+                <button 
+                  onClick={() => setShowMemberHub(false)}
+                  className="absolute top-4 right-4 p-2 text-gray-400 hover:text-black z-10"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+
+                <div className="pt-20 pb-10 px-4">
+                  <div className="flex flex-col items-center mb-12">
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-slate-50 text-xs text-slate-500 mb-6 font-medium">
+                      <Crown className="h-3 w-3 text-amber-500" />
+                      <span>Member Dashboard</span>
+                    </div>
+                    <h1 className="text-4xl font-extrabold text-black tracking-tight mb-4">Member Hub</h1>
+                    <p className="text-gray-500 text-center max-w-2xl text-lg">
+                      Manage your subscription, access premium resources, and grow your business with exclusive member benefits.
+                    </p>
+                  </div>
+
+                  {/* Stats Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Plan Type</p>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-2xl font-bold text-slate-900">{isSubscribed ? 'Pro Plan' : 'Free Plan'}</h3>
+                        <span className={`px-2 py-1 rounded text-[10px] font-bold ${isSubscribed ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600'}`}>
+                          {isSubscribed ? 'ACTIVE' : 'BASIC'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Subscription Value</p>
+                      <h3 className="text-2xl font-bold text-slate-900">₹{isSubscribed ? '9,999' : '0'}</h3>
+                      <p className="text-[10px] text-slate-400 mt-1">Total investment in growth</p>
+                    </div>
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Resource Load</p>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-2xl font-bold text-slate-900">{isSubscribed ? '85%' : '5%'}</h3>
+                        <span className="text-[10px] text-slate-400">Vault Usage</span>
+                      </div>
+                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full transition-all duration-1000 ${isSubscribed ? 'bg-violet-500 w-[85%]' : 'bg-slate-300 w-[5%]'}`}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Benefits Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {[
+                      { title: 'Digital Vault', icon: Database, color: 'violet' },
+                      { title: 'Mastermind', icon: Users, color: 'blue' },
+                      { title: 'Strategy Call', icon: Phone, color: 'emerald' },
+                      { title: 'Viral Library', icon: Play, color: 'pink' },
+                      { title: 'Ad-Free', icon: Zap, color: 'amber' },
+                      { title: 'Beta Portal', icon: Rocket, color: 'indigo' },
+                      { title: 'Growth Alpha', icon: Globe, color: 'cyan' },
+                      { title: 'Product Request', icon: Lightbulb, color: 'red', special: true },
+                    ].map((benefit, idx) => (
+                      <div 
+                        key={idx}
+                        onClick={() => {
+                          if (!isSubscribed) {
+                            setIsUpgradeModalOpen(true);
+                          } else {
+                            if (benefit.title === 'Product Request') {
+                              setShowRequestPage(true);
+                              setShowMemberHub(false);
+                            } else {
+                              alert(`Opening ${benefit.title}...`);
+                            }
+                          }
+                        }}
+                        className={`group relative bg-white rounded-2xl p-6 shadow-sm border transition-all duration-300 cursor-pointer hover:shadow-md ${benefit.special ? 'border-[#F15B5B] hover:bg-[#F15B5B]/5' : 'border-slate-100 hover:border-violet-200'}`}
+                      >
+                        {!isSubscribed && (
+                          <div className="absolute top-4 right-4">
+                            <Lock className="h-4 w-4 text-slate-300 group-hover:text-slate-400 transition-colors" />
+                          </div>
+                        )}
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${benefit.special ? 'bg-[#F15B5B] text-white' : 'bg-slate-50 text-slate-600'}`}>
+                          <benefit.icon className="h-6 w-6" />
+                        </div>
+                        <h3 className={`font-bold text-lg mb-2 ${benefit.special ? 'text-[#F15B5B]' : 'text-slate-900'}`}>{benefit.title}</h3>
+                        <p className="text-slate-400 text-xs leading-relaxed">
+                          Access exclusive {benefit.title.toLowerCase()} resources and tools to scale your business.
+                        </p>
+                        <button 
+                          className={`mt-6 w-full py-2 rounded-lg text-xs font-bold transition-colors ${benefit.special ? 'bg-[#F15B5B] text-white hover:bg-[#d46a6a]' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
+                        >
+                          {isSubscribed ? 'Access Now' : 'Upgrade to Unlock'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         {/* Upgrade Modal */}
         <AnimatePresence>
           {isUpgradeModalOpen && (
@@ -457,49 +582,51 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
             >
               <motion.div 
-                initial={{ scale: 0.9, y: 50 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 50 }}
-                className="bg-white rounded-[24px] p-8 max-w-sm w-full relative shadow-2xl"
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="bg-white rounded-[32px] p-8 max-w-sm w-full relative shadow-2xl"
               >
-                <button onClick={() => setIsUpgradeModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-black">
+                <button onClick={() => setIsUpgradeModalOpen(false)} className="absolute top-6 right-6 text-gray-400 hover:text-black">
                   <X className="h-5 w-5" />
                 </button>
                 
                 <div className="text-center mb-6">
-                  <div className="inline-block px-3 py-1 bg-gray-100 rounded-full text-[10px] font-bold text-gray-600 tracking-wider mb-4">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 rounded-full text-[10px] font-bold text-gray-600 tracking-wider mb-4">
                     👑 PREMIUM FEATURE
                   </div>
-                  <h2 className="text-2xl font-extrabold text-black mb-3">Upgrade to Submit Ideas</h2>
-                  <p className="text-gray-500 text-sm mx-auto max-w-[300px]">Submitting product ideas is a premium feature. Upgrade your plan to share your innovative ideas with our community.</p>
+                  <h2 className="text-2xl font-extrabold text-black mb-3">Unlock Member Benefits</h2>
+                  <p className="text-gray-500 text-sm mx-auto max-w-[280px]">Get exclusive access to premium SaaS deals and discounts available only to Master Lifetime members.</p>
                 </div>
                 
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center gap-2 text-sm text-gray-800 font-medium">
-                    <Check className="h-4 w-4 text-black" /> Submit unlimited product ideas
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center gap-3 text-sm text-gray-900 font-medium">
+                    <Check className="h-5 w-5 text-black" /> Save $2,000+ with exclusive SaaS deals
                   </div>
-                  <div className="relative my-4">
+                  
+                  <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t border-gray-200"></div>
                     </div>
                     <div className="relative flex justify-center text-[10px] uppercase tracking-widest text-gray-400">
-                      <span className="bg-white px-2">PLUS GET EVERYTHING ELSE</span>
+                      <span className="bg-white px-3">PLUS GET EVERYTHING ELSE</span>
                     </div>
                   </div>
+                  
                   <div className="grid grid-cols-3 gap-2 text-center text-[10px] text-gray-600">
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="p-2 bg-gray-50 rounded-lg"><ArrowDown className="h-4 w-4" /></div>
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="p-3 bg-gray-50 rounded-xl"><ArrowDown className="h-5 w-5 text-gray-600" /></div>
                       Unlimited Downloads
                     </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="p-2 bg-gray-50 rounded-lg"><Library className="h-4 w-4" /></div>
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="p-3 bg-gray-50 rounded-xl"><Library className="h-5 w-5 text-gray-600" /></div>
                       Full Library Access
                     </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="p-2 bg-gray-50 rounded-lg"><Lock className="h-4 w-4" /></div>
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="p-3 bg-gray-50 rounded-xl"><Lock className="h-5 w-5 text-gray-600" /></div>
                       PLR License
                     </div>
                   </div>
@@ -507,18 +634,18 @@ export default function App() {
 
                 <a
                   href="/pricing"
-                  className="block w-full text-center px-6 py-3 bg-[#E11D48] text-white rounded-lg font-bold hover:bg-[#BE123C] transition-colors mb-4"
+                  className="block w-full text-center px-6 py-4 bg-[#E11D48] text-white rounded-xl font-bold hover:bg-[#BE123C] transition-colors mb-6 text-sm"
                 >
                   See pricing plans →
                 </a>
                 
-                <div className="flex items-center justify-center gap-1 text-[10px] text-gray-400 mb-4">
-                  <Shield className="h-3 w-3" /> Secure checkout • Lifetime access
+                <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 mb-6">
+                  <Shield className="h-3.5 w-3.5" /> Secure checkout • Lifetime access
                 </div>
                 
                 <button
                   onClick={() => setIsUpgradeModalOpen(false)}
-                  className="block w-full text-center text-xs text-gray-400 underline"
+                  className="block w-full text-center text-xs text-gray-400 underline hover:text-gray-600"
                 >
                   Maybe later
                 </button>
