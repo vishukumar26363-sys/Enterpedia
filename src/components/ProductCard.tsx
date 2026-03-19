@@ -5,7 +5,6 @@ import { useWelcomeGift } from "../context/WelcomeGiftContext";
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: (product: Product) => void;
   onOpenProduct: (product: Product) => void;
   onDownload: (product: Product) => void;
   key?: string | number;
@@ -13,7 +12,6 @@ interface ProductCardProps {
 
 export default function ProductCard({
   product,
-  onAddToCart,
   onOpenProduct,
   onDownload,
 }: ProductCardProps) {

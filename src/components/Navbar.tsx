@@ -1,5 +1,4 @@
 import {
-  ShoppingCart,
   Menu,
   X,
   Search,
@@ -7,6 +6,7 @@ import {
   LogOut,
   Settings,
   ChevronDown,
+  ChevronRight,
   Home,
   FileText,
   Bookmark,
@@ -14,12 +14,11 @@ import {
   Crown,
   Lightbulb,
   Folder,
+  Lock,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 interface NavbarProps {
-  cartCount: number;
-  onOpenCart: () => void;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   isLoggedIn: boolean;
@@ -27,18 +26,19 @@ interface NavbarProps {
   onLogout: () => void;
   onGoHome: () => void;
   onShowProducts: () => void;
+  onShowSamples: () => void;
   onShowSaved: () => void;
   onShowRequest: () => void;
   onShowMemberHub: () => void;
   onShowMarketGaps: () => void;
+  onShowAssets: () => void;
   onOpenContact: () => void;
+  onOpenUpgradeModal: () => void;
   activeItem?: string;
   isProductPage?: boolean;
 }
 
 export default function Navbar({
-  cartCount,
-  onOpenCart,
   searchTerm,
   setSearchTerm,
   isLoggedIn,
@@ -46,15 +46,19 @@ export default function Navbar({
   onLogout,
   onGoHome,
   onShowProducts,
+  onShowSamples,
   onShowSaved,
   onShowRequest,
   onShowMemberHub,
   onShowMarketGaps,
+  onShowAssets,
   onOpenContact,
+  onOpenUpgradeModal,
   activeItem = 'home',
   isProductPage = false,
 }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAssetsOpen, setIsAssetsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -81,7 +85,9 @@ export default function Navbar({
   return (
     <>
       <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm py-2" : "bg-transparent py-4"}`}
+        className={`absolute top-0 w-full z-[150] transition-all duration-300 ${
+          isProductPage ? 'bg-[#1a113a] py-3 shadow-lg' : 'bg-transparent py-5'
+        }`}
       >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
@@ -89,8 +95,14 @@ export default function Navbar({
           <div className="flex-shrink-0 flex items-center">
             <a
               href="/"
-              className="flex items-center"
+              className="flex items-center gap-2"
             >
+              <img 
+                src="https://i.imgur.com/4N4PXjW.png" 
+                alt="Enterpedia Logo" 
+                className="h-[24px] w-auto block bg-transparent shadow-none border-none"
+                referrerPolicy="no-referrer"
+              />
               <span className="text-2xl font-display font-bold tracking-tight">
                 <span className="text-white">Enter</span>
                 <span className="text-gradient-logo">pedia</span>
@@ -124,7 +136,7 @@ export default function Navbar({
               <>
                 <button
                   onClick={onShowProducts}
-                  className="text-slate-600 hover:text-violet-600 font-medium text-sm transition-colors"
+                  className={`${scrolled ? 'text-slate-600 hover:text-violet-600' : 'text-white/90 hover:text-white'} font-medium text-sm transition-colors`}
                 >
                   Shop All
                 </button>
@@ -132,7 +144,7 @@ export default function Navbar({
                   <div className="relative" ref={profileRef}>
                     <button
                       onClick={() => setIsProfileOpen(!isProfileOpen)}
-                      className="flex items-center space-x-2 text-slate-600 hover:text-violet-600 transition-colors focus:outline-none"
+                      className={`flex items-center space-x-2 ${scrolled ? 'text-slate-600 hover:text-violet-600' : 'text-white/90 hover:text-white'} transition-colors focus:outline-none`}
                     >
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm shadow-sm border border-white/50">
                         JD
@@ -184,7 +196,7 @@ export default function Navbar({
                 ) : (
                   <button
                     onClick={onOpenAuth}
-                    className="flex items-center text-slate-600 hover:text-violet-600 font-medium text-sm transition-colors"
+                    className={`flex items-center ${scrolled ? 'text-slate-600 hover:text-violet-600' : 'text-white/90 hover:text-white'} font-medium text-sm transition-colors`}
                   >
                     <User className="w-4 h-4 mr-1.5" />
                     Sign In
@@ -194,54 +206,31 @@ export default function Navbar({
             ) : (
               <button
                 onClick={() => setIsMenuOpen(true)}
-                className="text-slate-600 hover:text-violet-600 focus:outline-none"
+                className="text-white hover:text-violet-400 focus:outline-none transition-colors"
               >
-                <Menu className="h-6 w-6" />
-              </button>
-            )}
-
-            {!isProductPage && (
-              <button
-                onClick={onOpenCart}
-                className="relative p-2 text-slate-600 hover:text-violet-600 transition-colors group"
-              >
-                <ShoppingCart className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-gradient-primary rounded-full shadow-sm">
-                    {cartCount}
-                  </span>
-                )}
+                <Menu className="h-7 w-7" />
               </button>
             )}
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden items-center space-x-4">
-            <button
-              onClick={onOpenCart}
-              className="relative p-2 text-slate-600 hover:text-violet-600"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-gradient-primary rounded-full">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setIsMenuOpen(true)}
-              className="text-slate-600 hover:text-violet-600 focus:outline-none"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-          </div>
+          {isProductPage && (
+            <div className="flex md:hidden items-center space-x-4">
+              <button
+                onClick={() => setIsMenuOpen(true)}
+                className="text-white hover:text-violet-400 focus:outline-none transition-colors"
+              >
+                <Menu className="h-7 w-7" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>
 
     {/* Unified Mobile Sidebar */}
     {isMenuOpen && (
-      <div className="fixed inset-0 z-[100]">
+      <div className="fixed inset-0 z-[200]">
         {/* Dark semi-transparent overlay */}
         <div
           className="absolute inset-0 bg-black/60 transition-opacity"
@@ -250,12 +239,21 @@ export default function Navbar({
         
         {isProductPage ? (
           /* Sidebar for Product Page */
-          <div className="absolute inset-y-0 left-0 w-[80%] sm:w-[300px] bg-[#121212] shadow-2xl transform transition-transform duration-300 flex flex-col">
+          <div className="absolute inset-y-0 left-0 w-[60%] sm:w-[230px] bg-[#121212] shadow-2xl transform transition-transform duration-300 flex flex-col">
             {/* Sidebar Header */}
-            <div className="px-5 py-4 flex items-center justify-between border-b border-white/10">
-              <span className="text-2xl font-display font-bold tracking-tight text-white uppercase">
-                ENTERPEDIA
-              </span>
+            <div className="px-4 py-4 flex items-center justify-between border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <img 
+                  src="https://i.imgur.com/4N4PXjW.png" 
+                  alt="Enterpedia Logo" 
+                  className="h-[26px] w-auto block bg-transparent shadow-none border-none grayscale"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="text-[26px] font-display font-bold tracking-tight">
+                  <span className="text-white">Enter</span>
+                  <span className="text-white/70">pedia</span>
+                </span>
+              </div>
               <button
                 onClick={() => setIsMenuOpen(false)}
                 className="text-white hover:text-gray-300 focus:outline-none p-1"
@@ -280,6 +278,17 @@ export default function Navbar({
               <button
                 onClick={() => {
                   onShowProducts();
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'products' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
+              >
+                <ClipboardList className="h-5 w-5" strokeWidth={2} />
+                <span className="text-sm font-semibold ml-4 font-sans">Shop All</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  onShowSamples();
                   setIsMenuOpen(false);
                 }}
                 className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'samples' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
@@ -335,9 +344,36 @@ export default function Navbar({
                 <Search className="h-5 w-5" strokeWidth={2} />
                 <div className="flex items-center justify-between flex-1 ml-4">
                   <span className="text-sm font-semibold font-sans">Market Gaps</span>
-                  <span className="bg-[#FF4B4B] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md leading-none">NEW</span>
+                  <span className="bg-white text-black text-[9px] font-bold px-1.5 py-0.5 rounded-md leading-none">NEW</span>
                 </div>
               </button>
+
+              <button
+                onClick={() => setIsAssetsOpen(!isAssetsOpen)}
+                className={`w-full flex items-center px-5 py-3 transition-colors ${isAssetsOpen ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
+              >
+                <Folder className="h-5 w-5" strokeWidth={2} />
+                <div className="flex items-center justify-between flex-1 ml-4">
+                  <span className="text-sm font-semibold font-sans">Assets</span>
+                  <ChevronRight className={`h-4 w-4 transition-transform duration-300 ${isAssetsOpen ? 'rotate-90' : ''}`} />
+                </div>
+              </button>
+              
+              <div 
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${isAssetsOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
+              >
+                <div className="bg-[#1a1a1a] py-2">
+                  <button
+                    onClick={() => {
+                      onShowAssets();
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full flex items-center px-12 py-2.5 text-white/70 hover:bg-[#2a2a2a] hover:text-white transition-colors"
+                  >
+                    <span className="text-sm font-medium flex-1 text-left">100+ E-Book Covers</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         ) : (

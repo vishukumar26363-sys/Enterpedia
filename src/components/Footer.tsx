@@ -21,12 +21,15 @@ export default function Footer({ onOpenContact, onOpenFaq, onOpenPrivacyPolicy, 
           <div className="col-span-1 md:col-span-2">
             <a
               href="/"
-              className="flex items-center gap-2 text-3xl font-display font-bold text-white tracking-tight mb-6 w-fit"
+              className="flex items-center gap-3 text-3xl font-display font-bold text-white tracking-tight mb-6 w-fit"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-400 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-violet-500/30">
-                <Hexagon className="w-6 h-6 fill-white/20" />
-              </div>
-              <span>
+              <img 
+                src="https://i.imgur.com/4N4PXjW.png" 
+                alt="Enterpedia Logo" 
+                className="h-[42px] w-auto block bg-transparent shadow-none border-none"
+                referrerPolicy="no-referrer"
+              />
+              <span className="flex items-center">
                 Enter
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-pink-400">
                   pedia
@@ -38,21 +41,27 @@ export default function Footer({ onOpenContact, onOpenFaq, onOpenPrivacyPolicy, 
             </p>
             <div className="flex space-x-5">
               <a
-                href="#"
+                href="https://facebook.com/enterpedia"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-violet-600 hover:text-white transition-all duration-300"
               >
                 <span className="sr-only">Facebook</span>
                 <Facebook className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="https://instagram.com/enterpedia"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all duration-300"
               >
                 <span className="sr-only">Instagram</span>
                 <Instagram className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="https://twitter.com/enterpedia"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-sky-500 hover:text-white transition-all duration-300"
               >
                 <span className="sr-only">Twitter</span>
@@ -62,14 +71,14 @@ export default function Footer({ onOpenContact, onOpenFaq, onOpenPrivacyPolicy, 
           </div>
 
           <div>
-            <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-6">
+            <h3 className="text-[13px] font-bold text-white tracking-[0.1em] uppercase mb-8 opacity-90">
               Quick Links
             </h3>
-            <ul className="space-y-4">
+            <ul className="space-y-5">
               <li>
                 <button
                   onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="text-sm text-slate-400 hover:text-violet-400 transition-colors"
+                  className="text-[14px] text-slate-400 hover:text-violet-400 transition-colors duration-200"
                 >
                   Shop All
                 </button>
@@ -77,7 +86,7 @@ export default function Footer({ onOpenContact, onOpenFaq, onOpenPrivacyPolicy, 
               <li>
                 <button
                   onClick={onOpenFaq}
-                  className="text-sm text-slate-400 hover:text-violet-400 transition-colors text-left"
+                  className="text-[14px] text-slate-400 hover:text-violet-400 transition-colors duration-200 text-left"
                 >
                   FAQ
                 </button>
@@ -85,7 +94,7 @@ export default function Footer({ onOpenContact, onOpenFaq, onOpenPrivacyPolicy, 
               <li>
                 <button
                   onClick={onOpenContact}
-                  className="text-sm text-slate-400 hover:text-violet-400 transition-colors text-left"
+                  className="text-[14px] text-slate-400 hover:text-violet-400 transition-colors duration-200 text-left"
                 >
                   Contact Us
                 </button>
@@ -94,14 +103,14 @@ export default function Footer({ onOpenContact, onOpenFaq, onOpenPrivacyPolicy, 
           </div>
 
           <div>
-            <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-6">
+            <h3 className="text-[13px] font-bold text-white tracking-[0.1em] uppercase mb-8 opacity-90">
               Legal
             </h3>
-            <ul className="space-y-4">
+            <ul className="space-y-5">
               <li>
                 <button
                   onClick={onOpenPrivacyPolicy}
-                  className="text-sm text-slate-400 hover:text-violet-400 transition-colors text-left"
+                  className="text-[14px] text-slate-400 hover:text-violet-400 transition-colors duration-200 text-left"
                 >
                   Privacy Policy
                 </button>
@@ -109,7 +118,7 @@ export default function Footer({ onOpenContact, onOpenFaq, onOpenPrivacyPolicy, 
               <li>
                 <button
                   onClick={onOpenTermsOfService}
-                  className="text-sm text-slate-400 hover:text-violet-400 transition-colors text-left"
+                  className="text-[14px] text-slate-400 hover:text-violet-400 transition-colors duration-200 text-left"
                 >
                   Terms of Service
                 </button>
@@ -117,7 +126,7 @@ export default function Footer({ onOpenContact, onOpenFaq, onOpenPrivacyPolicy, 
               <li>
                 <button
                   onClick={onOpenRefundPolicy}
-                  className="text-sm text-slate-400 hover:text-violet-400 transition-colors text-left"
+                  className="text-[14px] text-slate-400 hover:text-violet-400 transition-colors duration-200 text-left"
                 >
                   Refund Policy
                 </button>

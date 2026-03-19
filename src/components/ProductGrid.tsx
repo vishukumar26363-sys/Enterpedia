@@ -7,7 +7,6 @@ import ProductCard from "./ProductCard";
 
 interface ProductGridProps {
   products: Product[];
-  onAddToCart: (product: Product) => void;
   onOpenProduct: (product: Product) => void;
   onDownload: (product: Product) => void;
   searchTerm: string;
@@ -15,7 +14,6 @@ interface ProductGridProps {
 
 export default function ProductGrid({
   products,
-  onAddToCart,
   onOpenProduct,
   onDownload,
   searchTerm,
@@ -127,7 +125,6 @@ export default function ProductGrid({
                 >
                   <ProductCard
                     product={product}
-                    onAddToCart={onAddToCart}
                     onOpenProduct={onOpenProduct}
                     onDownload={onDownload}
                   />

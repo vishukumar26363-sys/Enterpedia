@@ -16,7 +16,7 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
   }, []);
 
   return (
-    <div className="relative bg-slate-950 overflow-hidden pt-20">
+    <div className="relative bg-slate-950 overflow-hidden">
       {/* Background Effects */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute -top-[40%] -left-[10%] w-[70%] h-[70%] rounded-full bg-violet-600/20 blur-[120px]" />
@@ -24,14 +24,14 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-20 pb-24 sm:pt-32 sm:pb-32 lg:pb-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-48 pb-48 sm:pt-64 sm:pb-64 lg:pt-80 lg:pb-96">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 text-violet-300 text-sm font-medium mb-8 backdrop-blur-sm">
             <Zap className="w-4 h-4 mr-2 text-pink-400" />
             #1 Digital Product Creator
           </div>
 
-          <h1 className="text-5xl tracking-tight font-display font-extrabold text-white sm:text-6xl md:text-7xl lg:text-8xl mb-6">
+          <h1 className="text-4xl tracking-tight font-display font-extrabold text-white sm:text-6xl md:text-7xl lg:text-8xl mb-6">
             Premium PLR Digital Products: <br className="hidden md:block" />
             <span className="text-gradient">Get Free Samples & Best Resell Bundles</span>
           </h1>
@@ -113,7 +113,7 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
 
       {/* New Hero Section */}
       <div className="bg-pink-50 -mt-4 py-2 px-4 text-center">
-        <h2 className="text-4xl md:text-5xl font-display font-bold text-black tracking-tight">
+        <h2 className="text-4xl tracking-tight font-display font-bold text-black sm:text-6xl md:text-7xl lg:text-8xl">
           Premium PLR Bundles <br />
           <span className="text-gradient">with Resell Rights</span>
         </h2>
@@ -236,7 +236,7 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
           Get Instant Access PLR
         </button>
 
-        <h2 className="text-4xl md:text-5xl font-display font-bold text-black tracking-tight mt-6">
+        <h2 className="text-4xl tracking-tight font-display font-bold text-black sm:text-6xl md:text-7xl lg:text-8xl mt-6">
           Get Pro Courses & PLR Ebooks <br />
           <span className="text-gradient">with Resell Rights</span>
         </h2>
@@ -250,7 +250,7 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
           </div>
         </div>
 
-        <h2 className="text-4xl md:text-5xl font-display font-bold text-black tracking-tight mt-6">
+        <h2 className="text-4xl tracking-tight font-display font-bold text-black sm:text-6xl md:text-7xl lg:text-8xl mt-6">
           Get Master Resell Rights on <br />
           <span className="text-gradient">This Entire Digital Product Collection</span>
         </h2>

@@ -12,23 +12,31 @@ async function startServer() {
   const PORT = 3000;
 
   // Email Transporter (Configure with environment variables)
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
+  const hasEmailConfig = !!(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+  
+  let transporter: nodemailer.Transporter | null = null;
+  
+  if (hasEmailConfig) {
+    transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
 
-  // Verify transporter connection
-  transporter.verify((error) => {
-    if (error) {
-      console.error("❌ Email Transporter Error:", error.message);
-      console.log("Please ensure EMAIL_USER and EMAIL_PASS (App Password) are correct in Settings.");
-    } else {
-      console.log("✅ Email Transporter is ready to send emails.");
-    }
-  });
+    // Verify transporter connection
+    transporter.verify((error) => {
+      if (error) {
+        console.error("❌ Email Transporter Error:", error.message);
+        console.log("Please ensure EMAIL_USER and EMAIL_PASS (App Password) are correct in Settings.");
+      } else {
+        console.log("✅ Email Transporter is ready to send emails.");
+      }
+    });
+  } else {
+    console.log("⚠️ Email credentials (EMAIL_USER, EMAIL_PASS) not found. Emails will be logged to console instead of sent.");
+  }
 
   app.use(express.json());
 
@@ -135,11 +143,11 @@ async function startServer() {
     };
 
     try {
-      if (process.env.EMAIL_PASS) {
+      if (transporter) {
         await transporter.sendMail(mailOptions);
         console.log(`✅ Email sent successfully to rajverma123orai@gmail.com for order ${orderId}`);
       } else {
-        console.error("❌ EMAIL_PASS is missing! Cannot send email.");
+        console.error("❌ Email credentials missing! Cannot send email.");
         console.log("-----------------------------------------");
         console.log(`FALLBACK APPROVAL LINK: ${approvalLink}`);
         console.log("-----------------------------------------");

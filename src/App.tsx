@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb, Search } from "lucide-react";
+import { ArrowLeft, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb, Search, Folder } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductGrid from "./components/ProductGrid";
-import CartModal from "./components/CartModal";
 import Footer from "./components/Footer";
 import AuthModal from "./components/AuthModal";
 import LicenseModal from "./components/LicenseModal";
@@ -50,8 +49,6 @@ const trendingTopics = [
 ];
 
 export default function App() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [votes, setVotes] = useState(trendingTopics.map(t => t.votes));
   const [activeCategory, setActiveCategory] = useState<'Ideas' | 'Planned' | 'Rejected'>('Ideas');
@@ -96,6 +93,7 @@ export default function App() {
   const [showRequestPage, setShowRequestPage] = useState(false);
   const [showMemberHub, setShowMemberHub] = useState(false);
   const [showMarketGaps, setShowMarketGaps] = useState(false);
+  const [showAssetsPage, setShowAssetsPage] = useState(false);
   const [activeItem, setActiveItem] = useState('home');
 
   // Market Gaps State
@@ -140,6 +138,19 @@ export default function App() {
       setSavedGaps(savedGapsList);
     }
   }, [showSaved, products]);
+
+  // Trigger upgrade modal after 5 seconds on Market Gaps page for free users
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (showMarketGaps && !isSubscribed) {
+      timeoutId = setTimeout(() => {
+        setIsUpgradeModalOpen(true);
+      }, 5000);
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [showMarketGaps, isSubscribed]);
 
   const handleDownloadReport = (gap: any) => {
     if (!isSubscribed) {
@@ -194,46 +205,6 @@ Generated on: ${new Date().toLocaleString()}
 
   const isLoggedIn = user !== null;
 
-  const handleAddToCart = (product: Product) => {
-    if (!isLoggedIn) {
-      setIsAuthModalOpen(true);
-      return;
-    }
-
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find(
-        (item) => item.product.id === product.id,
-      );
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      }
-      return [...prevItems, { product, quantity: 1 }];
-    });
-    setIsCartOpen(true);
-  };
-
-  const handleRemoveItem = (productId: string) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.product.id !== productId),
-    );
-  };
-
-  const handleUpdateQuantity = (productId: string, quantity: number) => {
-    if (quantity === 0) {
-      handleRemoveItem(productId);
-      return;
-    }
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item,
-      ),
-    );
-  };
-
   const handleLogin = (name: string, email: string) => {
     setUser({ name, email });
     setIsAuthModalOpen(false);
@@ -241,7 +212,6 @@ Generated on: ${new Date().toLocaleString()}
 
   const handleLogout = () => {
     setUser(null);
-    setCartItems([]);
   };
 
   const handleDownloadRequest = (product: Product) => {
@@ -249,16 +219,12 @@ Generated on: ${new Date().toLocaleString()}
     setIsPaymentModalOpen(true);
   };
 
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
   return (
     <WelcomeGiftProvider>
       <div className="min-h-screen flex flex-col font-sans text-slate-900">
         <WelcomeGift />
         <SalesNotification />
         <Navbar
-          cartCount={cartCount}
-          onOpenCart={() => setIsCartOpen(true)}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           isLoggedIn={isLoggedIn}
@@ -270,15 +236,30 @@ Generated on: ${new Date().toLocaleString()}
             setShowSaved(false);
             setShowRequestPage(false);
             setShowMemberHub(false);
+            setShowMarketGaps(false);
+            setShowAssetsPage(false);
             setSelectedProduct(null);
             setActiveItem('home');
           }}
           onShowProducts={() => {
+            setShowProducts(true);
+            setShowSamplesPage(false);
+            setShowSaved(false);
+            setShowRequestPage(false);
+            setShowMemberHub(false);
+            setShowMarketGaps(false);
+            setShowAssetsPage(false);
+            setSelectedProduct(null);
+            setActiveItem('products');
+          }}
+          onShowSamples={() => {
             setShowSamplesPage(true);
             setShowProducts(false);
             setShowSaved(false);
             setShowRequestPage(false);
             setShowMemberHub(false);
+            setShowMarketGaps(false);
+            setShowAssetsPage(false);
             setSelectedProduct(null);
             setActiveItem('samples');
           }}
@@ -288,6 +269,8 @@ Generated on: ${new Date().toLocaleString()}
             setShowProducts(false);
             setShowRequestPage(false);
             setShowMemberHub(false);
+            setShowMarketGaps(false);
+            setShowAssetsPage(false);
             setSelectedProduct(null);
             setActiveItem('saved');
           }}
@@ -297,29 +280,25 @@ Generated on: ${new Date().toLocaleString()}
             setShowSaved(false);
             setShowSamplesPage(false);
             setShowProducts(false);
+            setShowMarketGaps(false);
+            setShowAssetsPage(false);
             setSelectedProduct(null);
             setActiveItem('request');
           }}
           onShowMemberHub={() => {
-            setActiveItem('memberhub');
             if (!isSubscribed) {
               setIsUpgradeModalOpen(true);
               // CRITICAL: Do not set showMemberHub(true) for free users
-              // Background remains Home
-              setShowProducts(false);
-              setShowSamplesPage(false);
-              setShowSaved(false);
-              setShowRequestPage(false);
-              setShowMemberHub(false);
-              setShowMarketGaps(false);
-              setSelectedProduct(null);
+              // Background remains whatever it was
             } else {
+              setActiveItem('memberhub');
               setShowMemberHub(true);
               setShowMarketGaps(false);
               setShowRequestPage(false);
               setShowSaved(false);
               setShowSamplesPage(false);
               setShowProducts(false);
+              setShowAssetsPage(false);
               setSelectedProduct(null);
             }
           }}
@@ -332,20 +311,32 @@ Generated on: ${new Date().toLocaleString()}
             setShowSaved(false);
             setShowSamplesPage(false);
             setShowProducts(false);
+            setShowAssetsPage(false);
             setSelectedProduct(null);
           }}
+          onShowAssets={() => {
+            setActiveItem('assets');
+            setShowAssetsPage(true);
+            setShowMarketGaps(false);
+            setShowMemberHub(false);
+            setShowRequestPage(false);
+            setShowSaved(false);
+            setShowSamplesPage(false);
+            setShowProducts(false);
+            setSelectedProduct(null);
+          }}
+          onOpenUpgradeModal={() => setIsUpgradeModalOpen(true)}
           onOpenContact={() => setIsContactModalOpen(true)}
           activeItem={activeItem}
-          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage || showMemberHub || showMarketGaps}
+          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage || showMemberHub || showMarketGaps || showAssetsPage}
         />
 
         <main className="flex-grow">
-          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub && !showMarketGaps ? 'block' : 'none' }}>
+          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub && !showMarketGaps && !showAssetsPage ? 'block' : 'none' }}>
             {selectedProduct ? (
               <ProductDetails
                 product={selectedProduct}
                 onBack={() => setSelectedProduct(null)}
-                onAddToCart={handleAddToCart}
                 onDownload={handleDownloadRequest}
               />
             ) : !showProducts ? (
@@ -358,7 +349,6 @@ Generated on: ${new Date().toLocaleString()}
             ) : (
               <ProductGrid
                 products={products}
-                onAddToCart={handleAddToCart}
                 onOpenProduct={(product) => setSelectedProduct(product)}
                 onDownload={handleDownloadRequest}
                 searchTerm={searchTerm}
@@ -366,7 +356,7 @@ Generated on: ${new Date().toLocaleString()}
             )}
           </div>
 
-          <div id="samples-page" style={{ display: showSamplesPage ? 'block' : 'none', background: 'white', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 100, overflowY: 'auto' }}>
+          <div id="samples-page" style={{ display: showSamplesPage ? 'block' : 'none', background: 'white', minHeight: '100vh', paddingTop: '80px' }}>
             <div className="max-w-7xl mx-auto p-4">
               
               <div className="flex flex-col items-center justify-center mt-10 px-4">
@@ -401,7 +391,6 @@ Generated on: ${new Date().toLocaleString()}
                   <ProductCard
                     key={product.id}
                     product={product}
-                    onAddToCart={handleAddToCart}
                     onOpenProduct={setSelectedProduct}
                     onDownload={handleDownloadRequest}
                   />
@@ -410,7 +399,7 @@ Generated on: ${new Date().toLocaleString()}
             </div>
           </div>
 
-          <div id="saved-page" style={{ display: showSaved ? 'block' : 'none', background: 'white', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 100, overflowY: 'auto' }}>
+          <div id="saved-page" style={{ display: showSaved ? 'block' : 'none', background: 'white', minHeight: '100vh', paddingTop: '80px' }}>
             <div className="max-w-7xl mx-auto p-4">
               
               <div className="flex flex-col items-center justify-center mt-10 px-4">
@@ -521,15 +510,8 @@ Generated on: ${new Date().toLocaleString()}
           </div>
         </main>
 
-        <div id="product-request-page" style={{ display: showRequestPage ? 'block' : 'none', background: '#f9fafb', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 100, overflowY: 'auto' }}>
+        <div id="product-request-page" style={{ display: showRequestPage ? 'block' : 'none', background: '#f9fafb', minHeight: '100vh', paddingTop: '80px' }}>
           <div className="max-w-7xl mx-auto p-4 relative min-h-screen">
-            <button 
-              onClick={() => setShowRequestPage(false)}
-              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-black"
-            >
-              <X className="h-6 w-6" />
-            </button>
-
             <div className="pt-20 pb-10 px-4 flex flex-col items-center">
               <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-slate-50 text-xs text-slate-500 mb-6 font-medium">
                 <span>✉️</span>
@@ -635,7 +617,7 @@ Generated on: ${new Date().toLocaleString()}
           </div>
         </div>
 
-        <div id="member-hub-page" style={{ display: showMemberHub ? 'block' : 'none', background: '#f8fafc', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 100, overflowY: 'auto' }}>
+        <div id="member-hub-page" style={{ display: showMemberHub ? 'block' : 'none', background: '#f8fafc', minHeight: '100vh', paddingTop: '80px' }}>
           <AnimatePresence>
             {showMemberHub && (
               <motion.div 
@@ -644,16 +626,6 @@ Generated on: ${new Date().toLocaleString()}
                 exit={{ opacity: 0 }}
                 className="max-w-7xl mx-auto p-4 relative min-h-screen"
               >
-                <button 
-                  onClick={() => {
-                    setShowMemberHub(false);
-                    setActiveItem('home');
-                  }}
-                  className="absolute top-4 right-4 p-2 text-gray-400 hover:text-black z-10"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-
                 <div className="pt-20 pb-10 px-4">
                   <div className="flex flex-col items-center mb-12">
                     <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-slate-50 text-xs text-slate-500 mb-6 font-medium">
@@ -750,7 +722,7 @@ Generated on: ${new Date().toLocaleString()}
           </AnimatePresence>
         </div>
 
-        <div id="market-gaps-page" style={{ display: showMarketGaps ? 'block' : 'none', background: '#F4F7F6', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: 100, overflowY: 'auto' }}>
+        <div id="market-gaps-page" style={{ display: showMarketGaps ? 'block' : 'none', background: '#F4F7F6', minHeight: '100vh', paddingTop: '80px' }}>
           <AnimatePresence>
             {showMarketGaps && (
               <motion.div 
@@ -759,16 +731,6 @@ Generated on: ${new Date().toLocaleString()}
                 exit={{ opacity: 0 }}
                 className="max-w-[1600px] mx-auto p-6 relative min-h-screen"
               >
-                <button 
-                  onClick={() => {
-                    setShowMarketGaps(false);
-                    setActiveItem('home');
-                  }}
-                  className="absolute top-6 right-8 p-2 text-gray-400 hover:text-black z-[110] bg-white rounded-full shadow-sm"
-                >
-                  <X className="h-6 w-6" />
-                </button>
-
                 {/* Header Section */}
                 <div className="pt-12 pb-8">
                   <div className="flex items-center gap-4 mb-2">
@@ -1053,6 +1015,59 @@ Generated on: ${new Date().toLocaleString()}
           </AnimatePresence>
         </div>
 
+        {/* Assets Page */}
+        <div id="assets-page" style={{ display: showAssetsPage ? 'block' : 'none', background: '#FFFFFF', minHeight: '100vh', paddingTop: '80px' }}>
+          <div className="max-w-7xl mx-auto p-4">
+            <div className="flex flex-col items-center justify-center mt-10 px-4">
+              <h1 className="text-4xl md:text-5xl font-extrabold text-black mb-6 text-center">
+                Premium E-Book Covers Library
+              </h1>
+              
+              <p className="text-gray-500 text-center max-w-2xl text-lg">
+                Download high-quality cover designs below.
+              </p>
+            </div>
+
+            {/* Uploaded Photo Grid */}
+            <div className="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-6 px-4 md:px-8 max-w-6xl mx-auto">
+              {/* Column 1: First Photo */}
+              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
+                <img 
+                  src="https://i.ibb.co/LM9R4mz/Red-Black-White-Modern-Motivation-Ebook-Cover.png" 
+                  alt="E-Book Cover Mockup"
+                  className="w-full h-auto block"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+
+              {/* Column 2: Second Photo */}
+              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
+                <img 
+                  src="https://i.ibb.co/PvR3WZ20/Black-Money-Tips-Professional-Ebook-Cover.png" 
+                  alt="Black Money Tips E-Book Cover"
+                  className="w-full h-auto block"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+
+              {/* Column 3: Third Photo */}
+              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
+                <img 
+                  src="https://i.ibb.co/6c4LGDKH/Black-and-White-Minimalist-Portfolio-e-Book-Cover.png" 
+                  alt="Black and White Minimalist Portfolio e-Book Cover"
+                  className="w-full h-auto block"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              
+              {/* Empty placeholders for future covers */}
+              <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 min-h-[250px] sm:min-h-[350px]"></div>
+              <div className="hidden lg:block rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 min-h-[350px]"></div>
+              <div className="hidden lg:block rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 min-h-[350px]"></div>
+            </div>
+          </div>
+        </div>
+
         {/* Upgrade Modal */}
         <AnimatePresence>
           {isUpgradeModalOpen && (
@@ -1071,7 +1086,14 @@ Generated on: ${new Date().toLocaleString()}
                 <button 
                   onClick={() => {
                     setIsUpgradeModalOpen(false);
-                    setActiveItem('home');
+                    setShowProducts(true);
+                    setShowSamplesPage(false);
+                    setShowSaved(false);
+                    setShowRequestPage(false);
+                    setShowMemberHub(false);
+                    setShowMarketGaps(false);
+                    setSelectedProduct(null);
+                    setActiveItem('products');
                   }} 
                   className="absolute top-6 right-6 text-gray-400 hover:text-black"
                 >
@@ -1082,13 +1104,13 @@ Generated on: ${new Date().toLocaleString()}
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 rounded-full text-[10px] font-bold text-amber-600 tracking-wider mb-4 border border-amber-100">
                     <Crown className="h-3 w-3" /> MASTER LIFETIME ONLY
                   </div>
-                  <h2 className="text-2xl font-extrabold text-black mb-3">Unlock Member Benefits</h2>
-                  <p className="text-gray-500 text-sm mx-auto max-w-[280px]">Get exclusive access to premium SaaS deals and discounts available only to Master Lifetime members.</p>
+                  <h2 className="text-2xl font-extrabold text-black mb-3">Unlock Market Gaps</h2>
+                  <p className="text-gray-500 text-sm mx-auto max-w-[280px]">Get access to 200+ curated business opportunities. Upgrade your plan to unlock the full vault and start building your business.</p>
                 </div>
                 
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center gap-3 text-sm text-gray-900 font-medium">
-                    <Check className="h-5 w-5 text-black" /> Save $2,000+ with exclusive SaaS deals
+                    <Check className="h-5 w-5 text-black" /> Access 200+ Market Gaps
                   </div>
                   
                   <div className="relative my-6">
@@ -1130,7 +1152,14 @@ Generated on: ${new Date().toLocaleString()}
                 <button
                   onClick={() => {
                     setIsUpgradeModalOpen(false);
-                    setActiveItem('home');
+                    setShowProducts(true);
+                    setShowSamplesPage(false);
+                    setShowSaved(false);
+                    setShowRequestPage(false);
+                    setShowMemberHub(false);
+                    setShowMarketGaps(false);
+                    setSelectedProduct(null);
+                    setActiveItem('products');
                   }}
                   className="block w-full text-center text-xs text-gray-400 underline hover:text-gray-600"
                 >
@@ -1184,14 +1213,6 @@ Generated on: ${new Date().toLocaleString()}
           onOpenPrivacyPolicy={() => setIsPrivacyPolicyModalOpen(true)}
           onOpenTermsOfService={() => setIsTermsOfServiceModalOpen(true)}
           onOpenRefundPolicy={() => setIsRefundPolicyModalOpen(true)}
-        />
-
-        <CartModal
-          isOpen={isCartOpen}
-          onClose={() => setIsCartOpen(false)}
-          cartItems={cartItems}
-          onRemoveItem={handleRemoveItem}
-          onUpdateQuantity={handleUpdateQuantity}
         />
 
         <PaymentSimulationModal

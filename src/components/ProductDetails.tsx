@@ -7,14 +7,12 @@ import { motion } from "motion/react";
 interface ProductDetailsProps {
   product: Product;
   onBack: () => void;
-  onAddToCart: (product: Product) => void;
   onDownload: (product: Product) => void;
 }
 
 export default function ProductDetails({
   product,
   onBack,
-  onAddToCart,
   onDownload,
 }: ProductDetailsProps) {
   useEffect(() => {
