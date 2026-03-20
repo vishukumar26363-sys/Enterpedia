@@ -32,8 +32,8 @@ interface NavbarProps {
   onShowRequest: () => void;
   onShowMemberHub: () => void;
   onShowMarketGaps: () => void;
-  onShowAssets: () => void;
-  onShowPdfRebrander: () => void;
+  onShowProductIdeas: () => void;
+  onShowBookTitleGenerator: () => void;
   onOpenContact: () => void;
   onOpenUpgradeModal: () => void;
   activeItem?: string;
@@ -53,15 +53,14 @@ export default function Navbar({
   onShowRequest,
   onShowMemberHub,
   onShowMarketGaps,
-  onShowAssets,
-  onShowPdfRebrander,
+  onShowProductIdeas,
+  onShowBookTitleGenerator,
   onOpenContact,
   onOpenUpgradeModal,
   activeItem = 'home',
   isProductPage = false,
 }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAssetsOpen, setIsAssetsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -352,43 +351,25 @@ export default function Navbar({
               </button>
 
               <button
-                onClick={() => setIsAssetsOpen(!isAssetsOpen)}
-                className={`w-full flex items-center px-5 py-3 transition-colors ${isAssetsOpen ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
+                onClick={() => {
+                  onShowProductIdeas();
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'productideas' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
               >
-                <Folder className="h-5 w-5" strokeWidth={2} />
-                <div className="flex items-center justify-between flex-1 ml-4">
-                  <span className="text-sm font-semibold font-sans">Assets</span>
-                  <ChevronRight className={`h-4 w-4 transition-transform duration-300 ${isAssetsOpen ? 'rotate-90' : ''}`} />
-                </div>
+                <Lightbulb className="h-5 w-5" strokeWidth={2} />
+                <span className="text-sm font-semibold ml-4 font-sans">Product Ideas</span>
               </button>
-              
-              <div 
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${isAssetsOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
-              >
-                <div className="bg-[#1a1a1a] py-2">
-                  <button
-                    onClick={() => {
-                      onShowAssets();
-                      setIsMenuOpen(false);
-                    }}
-                    className="w-full flex items-center px-12 py-2.5 text-white/70 hover:bg-[#2a2a2a] hover:text-white transition-colors"
-                  >
-                    <span className="text-sm font-medium flex-1 text-left">50+ E-Book Covers</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="h-px bg-white/10 my-2 mx-4"></div>
 
               <button
                 onClick={() => {
-                  onShowPdfRebrander();
+                  onShowBookTitleGenerator();
                   setIsMenuOpen(false);
                 }}
-                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'pdf-rebrander' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'booktitlegenerator' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
               >
                 <FileEdit className="h-5 w-5" strokeWidth={2} />
-                <span className="text-sm font-semibold ml-4 font-sans">PDF Rebrander</span>
+                <span className="text-sm font-semibold ml-4 font-sans">Book Title Generator</span>
               </button>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb, Search, Folder } from "lucide-react";
+import { ArrowLeft, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb, Search, Folder, Wand2, FileEdit } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductGrid from "./components/ProductGrid";
@@ -12,7 +12,6 @@ import FaqModal from "./components/FaqModal";
 import PrivacyPolicyModal from "./components/PrivacyPolicyModal";
 import RefundPolicyModal from "./components/RefundPolicyModal";
 import TermsOfServiceModal from "./components/TermsOfServiceModal";
-import PdfRebrander from "./components/PdfRebrander";
 import WelcomeGift from "./components/WelcomeGift";
 import ProductDetails from "./components/ProductDetails";
 import ProductCard from "./components/ProductCard";
@@ -94,8 +93,8 @@ export default function App() {
   const [showRequestPage, setShowRequestPage] = useState(false);
   const [showMemberHub, setShowMemberHub] = useState(false);
   const [showMarketGaps, setShowMarketGaps] = useState(false);
-  const [showAssetsPage, setShowAssetsPage] = useState(false);
-  const [showPdfRebrander, setShowPdfRebrander] = useState(false);
+  const [showProductIdeas, setShowProductIdeas] = useState(false);
+  const [showBookTitleGenerator, setShowBookTitleGenerator] = useState(false);
   const [activeItem, setActiveItem] = useState('home');
 
   // Market Gaps State
@@ -239,8 +238,8 @@ Generated on: ${new Date().toLocaleString()}
             setShowRequestPage(false);
             setShowMemberHub(false);
             setShowMarketGaps(false);
-            setShowAssetsPage(false);
-            setShowPdfRebrander(false);
+            setShowProductIdeas(false);
+            setShowBookTitleGenerator(false);
             setSelectedProduct(null);
             setActiveItem('home');
           }}
@@ -251,8 +250,8 @@ Generated on: ${new Date().toLocaleString()}
             setShowRequestPage(false);
             setShowMemberHub(false);
             setShowMarketGaps(false);
-            setShowAssetsPage(false);
-            setShowPdfRebrander(false);
+            setShowProductIdeas(false);
+            setShowBookTitleGenerator(false);
             setSelectedProduct(null);
             setActiveItem('products');
           }}
@@ -263,8 +262,8 @@ Generated on: ${new Date().toLocaleString()}
             setShowRequestPage(false);
             setShowMemberHub(false);
             setShowMarketGaps(false);
-            setShowAssetsPage(false);
-            setShowPdfRebrander(false);
+            setShowProductIdeas(false);
+            setShowBookTitleGenerator(false);
             setSelectedProduct(null);
             setActiveItem('samples');
           }}
@@ -275,8 +274,8 @@ Generated on: ${new Date().toLocaleString()}
             setShowRequestPage(false);
             setShowMemberHub(false);
             setShowMarketGaps(false);
-            setShowAssetsPage(false);
-            setShowPdfRebrander(false);
+            setShowProductIdeas(false);
+            setShowBookTitleGenerator(false);
             setSelectedProduct(null);
             setActiveItem('saved');
           }}
@@ -287,8 +286,8 @@ Generated on: ${new Date().toLocaleString()}
             setShowSamplesPage(false);
             setShowProducts(false);
             setShowMarketGaps(false);
-            setShowAssetsPage(false);
-            setShowPdfRebrander(false);
+            setShowProductIdeas(false);
+            setShowBookTitleGenerator(false);
             setSelectedProduct(null);
             setActiveItem('request');
           }}
@@ -305,8 +304,8 @@ Generated on: ${new Date().toLocaleString()}
               setShowSaved(false);
               setShowSamplesPage(false);
               setShowProducts(false);
-              setShowAssetsPage(false);
-              setShowPdfRebrander(false);
+              setShowProductIdeas(false);
+              setShowBookTitleGenerator(false);
               setSelectedProduct(null);
             }
           }}
@@ -319,14 +318,14 @@ Generated on: ${new Date().toLocaleString()}
             setShowSaved(false);
             setShowSamplesPage(false);
             setShowProducts(false);
-            setShowAssetsPage(false);
-            setShowPdfRebrander(false);
+            setShowProductIdeas(false);
+            setShowBookTitleGenerator(false);
             setSelectedProduct(null);
           }}
-          onShowAssets={() => {
-            setActiveItem('assets');
-            setShowAssetsPage(true);
-            setShowPdfRebrander(false);
+          onShowProductIdeas={() => {
+            setActiveItem('productideas');
+            setShowProductIdeas(true);
+            setShowBookTitleGenerator(false);
             setShowMarketGaps(false);
             setShowMemberHub(false);
             setShowRequestPage(false);
@@ -335,10 +334,10 @@ Generated on: ${new Date().toLocaleString()}
             setShowProducts(false);
             setSelectedProduct(null);
           }}
-          onShowPdfRebrander={() => {
-            setActiveItem('pdf-rebrander');
-            setShowPdfRebrander(true);
-            setShowAssetsPage(false);
+          onShowBookTitleGenerator={() => {
+            setActiveItem('booktitlegenerator');
+            setShowBookTitleGenerator(true);
+            setShowProductIdeas(false);
             setShowMarketGaps(false);
             setShowMemberHub(false);
             setShowRequestPage(false);
@@ -350,11 +349,11 @@ Generated on: ${new Date().toLocaleString()}
           onOpenUpgradeModal={() => setIsUpgradeModalOpen(true)}
           onOpenContact={() => setIsContactModalOpen(true)}
           activeItem={activeItem}
-          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage || showMemberHub || showMarketGaps || showAssetsPage || showPdfRebrander}
+          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage || showMemberHub || showMarketGaps || showProductIdeas || showBookTitleGenerator}
         />
 
         <main className="flex-grow">
-          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub && !showMarketGaps && !showAssetsPage && !showPdfRebrander ? 'block' : 'none' }}>
+          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub && !showMarketGaps && !showProductIdeas && !showBookTitleGenerator ? 'block' : 'none' }}>
             {selectedProduct ? (
               <ProductDetails
                 product={selectedProduct}
@@ -1037,312 +1036,36 @@ Generated on: ${new Date().toLocaleString()}
           </AnimatePresence>
         </div>
 
-        {/* Assets Page */}
-        <div id="assets-page" style={{ display: showAssetsPage ? 'block' : 'none', background: '#FFFFFF', minHeight: '100vh', paddingTop: '80px' }}>
-          <div className="max-w-7xl mx-auto p-4">
-            <div className="flex flex-col items-center justify-center mt-10 px-4">
-              <h1 className="text-4xl md:text-5xl font-extrabold text-black mb-6 text-center">
-                Premium E-Book Covers Library
+        {/* Product Ideas Page */}
+        <div id="product-ideas-page" style={{ display: showProductIdeas ? 'block' : 'none', background: '#FFFFFF', minHeight: '100vh', paddingTop: '80px' }}>
+          <div className="max-w-7xl mx-auto p-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
+            <div className="w-full max-w-3xl bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-3">
+                <Lightbulb className="h-8 w-8 text-amber-500" />
+                Product Ideas
               </h1>
-              
-              <p className="text-gray-500 text-center max-w-2xl text-lg">
-                Download high-quality cover designs below.
+              <hr className="border-gray-200 mb-6" />
+              <p className="text-lg text-gray-700 leading-relaxed">
+                Yahan aapko naye aur trending digital products ke ideas milenge jinhe aap asani se banakar bech sakte hain.
               </p>
-            </div>
-
-            {/* Uploaded Photo Grid */}
-            <div className="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-6 px-4 md:px-8 max-w-6xl mx-auto">
-              {/* Column 1: First Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/LM9R4mz/Red-Black-White-Modern-Motivation-Ebook-Cover.png" 
-                  alt="E-Book Cover Mockup"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 2: Second Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/PvR3WZ20/Black-Money-Tips-Professional-Ebook-Cover.png" 
-                  alt="Black Money Tips E-Book Cover"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 3: Third Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/3yJxfB6W/IMG-20260319-214825-767.jpg" 
-                  alt="E-Book Cover 3"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 4: Fourth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/LXZRQCH1/IMG-20260319-214755-600.jpg" 
-                  alt="E-Book Cover 4"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 5: Fifth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/jZDXfqtX/IMG-20260319-214741-407.jpg" 
-                  alt="E-Book Cover 5"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 6: Sixth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/4RdfNgQZ/IMG-20260319-214734-501.jpg" 
-                  alt="E-Book Cover 6"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 7: Seventh Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/67Dhsdcw/IMG-20260319-214748-826.jpg" 
-                  alt="E-Book Cover 7"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 8: Eighth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/DDDN5X6n/IMG-20260319-214807-505.jpg" 
-                  alt="E-Book Cover 8"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 9: Ninth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/mVgPNCzB/IMG-20260319-214815-416.jpg" 
-                  alt="E-Book Cover 9"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 10: Tenth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/Hfx61QtM/IMG-20260319-214721-526.jpg" 
-                  alt="E-Book Cover 10"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 11: Eleventh Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/RpZbcfM9/IMG-20260319-214841-706.jpg" 
-                  alt="E-Book Cover 11"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 12: Twelfth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/vvhCBF7N/IMG-20260319-214833-629.jpg" 
-                  alt="E-Book Cover 12"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 13: Thirteenth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/k25Sshb0/IMG-20260319-214727-611.jpg" 
-                  alt="E-Book Cover 13"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 14: Fourteenth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/84TLDpZH/Yellow-and-Black-Illustration-Wellness-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 14"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 15: Fifteenth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/qM9sFFV4/Bahasa-Inggris.png" 
-                  alt="E-Book Cover 15"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 16: Sixteenth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/chmkhBSY/Black-and-Gold-Financial-e-Book-Cover.png" 
-                  alt="E-Book Cover 16"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 17: Seventeenth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/m5b3CRnj/2.png" 
-                  alt="E-Book Cover 17"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 18: Eighteenth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/jPqzw4hR/Blue-and-White-Modern-Motivational-Book-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 18"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 19: Nineteenth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/YTRKsS1V/White-and-Blue-Simple-Dreams-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 19"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 20: Twentieth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/84TLDpZH/Yellow-and-Black-Illustration-Wellness-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 20"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 21: Twenty-First Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/MxvYwCgV/Gold-Black-and-White-Spooky-Building-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 21"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 22: Twenty-Second Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/G3vYDkxz/Brown-Neutral-Motivational-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 22"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 23: Twenty-Third Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/YTd5w6Pd/Dark-Modern-Photographic-Horror-Ebook-Cover.png" 
-                  alt="E-Book Cover 23"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 24: Twenty-Fourth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/RpdqqQsr/Black-and-White-Simple-Nature-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 24"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 25: Twenty-Fifth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/W4pgFqqG/Dark-Blue-and-White-Bold-and-Minimalist-Outer-Space-Teen-Fiction-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 25"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 26: Twenty-Sixth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/SD7B54q2/Man-Silhouette-Thriller-Mystery-Book-Cover.png" 
-                  alt="E-Book Cover 26"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 27: Twenty-Seventh Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/LD6Wp0zD/Gold-Modern-Light-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 27"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-
-              {/* Column 28: Twenty-Eighth Photo */}
-              <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-md border border-slate-200 hover:shadow-lg transition-shadow">
-                <img 
-                  src="https://i.ibb.co/B2KJSxSz/Black-and-White-Simple-Weaving-Memories-Wattpad-Book-Cover.png" 
-                  alt="E-Book Cover 28"
-                  className="w-full h-auto block"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              
-              {/* Empty placeholders for future covers */}
-              <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 min-h-[250px] sm:min-h-[350px]"></div>
-              <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 min-h-[250px] sm:min-h-[350px]"></div>
-              <div className="rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 min-h-[250px] sm:min-h-[350px]"></div>
             </div>
           </div>
         </div>
 
-        {/* PDF Rebrander Page */}
-        <div id="pdf-rebrander-page" style={{ display: showPdfRebrander ? 'block' : 'none', background: '#f8fafc', minHeight: '100vh', paddingTop: '80px' }}>
-          <PdfRebrander />
+        {/* Book Title Generator Page */}
+        <div id="book-title-generator-page" style={{ display: showBookTitleGenerator ? 'block' : 'none', background: '#FFFFFF', minHeight: '100vh', paddingTop: '80px' }}>
+          <div className="max-w-7xl mx-auto p-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
+            <div className="w-full max-w-3xl bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+              <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-3">
+                <FileEdit className="h-8 w-8 text-blue-500" />
+                Book Title Generator
+              </h1>
+              <hr className="border-gray-200 mb-6" />
+              <p className="text-lg text-gray-700 leading-relaxed">
+                Yahan aap apni nayi book ke liye aakarshak aur trending titles generate kar sakte hain.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Upgrade Modal */}
