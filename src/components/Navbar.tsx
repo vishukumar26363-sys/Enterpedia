@@ -15,6 +15,7 @@ import {
   Lightbulb,
   Folder,
   Lock,
+  FileEdit,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
@@ -32,6 +33,7 @@ interface NavbarProps {
   onShowMemberHub: () => void;
   onShowMarketGaps: () => void;
   onShowAssets: () => void;
+  onShowPdfRebrander: () => void;
   onOpenContact: () => void;
   onOpenUpgradeModal: () => void;
   activeItem?: string;
@@ -52,6 +54,7 @@ export default function Navbar({
   onShowMemberHub,
   onShowMarketGaps,
   onShowAssets,
+  onShowPdfRebrander,
   onOpenContact,
   onOpenUpgradeModal,
   activeItem = 'home',
@@ -370,10 +373,23 @@ export default function Navbar({
                     }}
                     className="w-full flex items-center px-12 py-2.5 text-white/70 hover:bg-[#2a2a2a] hover:text-white transition-colors"
                   >
-                    <span className="text-sm font-medium flex-1 text-left">100+ E-Book Covers</span>
+                    <span className="text-sm font-medium flex-1 text-left">50+ E-Book Covers</span>
                   </button>
                 </div>
               </div>
+
+              <div className="h-px bg-white/10 my-2 mx-4"></div>
+
+              <button
+                onClick={() => {
+                  onShowPdfRebrander();
+                  setIsMenuOpen(false);
+                }}
+                className={`w-full flex items-center px-5 py-3 transition-colors ${activeItem === 'pdf-rebrander' ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-[#2a2a2a] hover:text-white'}`}
+              >
+                <FileEdit className="h-5 w-5" strokeWidth={2} />
+                <span className="text-sm font-semibold ml-4 font-sans">PDF Rebrander</span>
+              </button>
             </div>
           </div>
         ) : (
