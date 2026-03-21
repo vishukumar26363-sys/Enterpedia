@@ -88,7 +88,7 @@ export default function Navbar({
     <>
       <nav
         className={`absolute top-0 w-full z-[150] transition-all duration-300 ${
-          isProductPage ? 'bg-[#1a113a] py-3 shadow-lg' : 'bg-transparent py-5'
+          isProductPage ? 'bg-[#1a113a] py-3 shadow-lg' : 'bg-transparent pt-0 pb-5'
         }`}
       >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -248,12 +248,12 @@ export default function Navbar({
                 <img 
                   src="https://i.imgur.com/4N4PXjW.png" 
                   alt="Enterpedia Logo" 
-                  className="h-[26px] w-auto block bg-transparent shadow-none border-none grayscale"
+                  className="h-[26px] w-auto block bg-transparent shadow-none border-none"
                   referrerPolicy="no-referrer"
                 />
                 <span className="text-[26px] font-display font-bold tracking-tight">
                   <span className="text-white">Enter</span>
-                  <span className="text-white/70">pedia</span>
+                  <span className="text-gradient-logo">pedia</span>
                 </span>
               </div>
               <button

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb, Search, Folder, Wand2, FileEdit } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb, Search, Folder, Wand2, FileEdit } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductGrid from "./components/ProductGrid";
@@ -18,6 +18,7 @@ import ProductCard from "./components/ProductCard";
 import PaymentSimulationModal from "./components/PaymentSimulationModal";
 import SalesNotification from "./components/SalesNotification";
 import ProductIdeator from "./components/ProductIdeator";
+import BookTitleGenerator from "./components/BookTitleGenerator";
 import { WelcomeGiftProvider } from "./context/WelcomeGiftContext";
 import { products } from "./data";
 import { plannedItems } from "./roadmapData";
@@ -96,6 +97,7 @@ export default function App() {
   const [showMarketGaps, setShowMarketGaps] = useState(false);
   const [showProductIdeas, setShowProductIdeas] = useState(false);
   const [showBookTitleGenerator, setShowBookTitleGenerator] = useState(false);
+  const [showDealPage, setShowDealPage] = useState(false);
   const [activeItem, setActiveItem] = useState('home');
 
   // Market Gaps State
@@ -123,6 +125,21 @@ export default function App() {
 
   const [isSubscribed, setIsSubscribed] = useState(false); // Mock subscription state
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [upgradeModalContent, setUpgradeModalContent] = useState({
+    title: "Unlock Market Gaps",
+    description: "Get access to 200+ curated business opportunities. Upgrade your plan to unlock the full vault and start building your business.",
+    feature: "Access 200+ Market Gaps"
+  });
+
+  const openUpgradeModal = (title?: string, description?: string, feature?: string) => {
+    setUpgradeModalContent({
+      title: title || "Unlock Market Gaps",
+      description: description || "Get access to 200+ curated business opportunities. Upgrade your plan to unlock the full vault and start building your business.",
+      feature: feature || "Access 200+ Market Gaps"
+    });
+    setIsUpgradeModalOpen(true);
+  };
+
   const [isRequestFormOpen, setIsRequestFormOpen] = useState(false);
   const [savedItems, setSavedItems] = useState<Product[]>([]);
   const [savedGaps, setSavedGaps] = useState<any[]>([]);
@@ -241,6 +258,7 @@ Generated on: ${new Date().toLocaleString()}
             setShowMarketGaps(false);
             setShowProductIdeas(false);
             setShowBookTitleGenerator(false);
+            setShowDealPage(false);
             setSelectedProduct(null);
             setActiveItem('home');
           }}
@@ -253,6 +271,7 @@ Generated on: ${new Date().toLocaleString()}
             setShowMarketGaps(false);
             setShowProductIdeas(false);
             setShowBookTitleGenerator(false);
+            setShowDealPage(false);
             setSelectedProduct(null);
             setActiveItem('products');
           }}
@@ -265,6 +284,7 @@ Generated on: ${new Date().toLocaleString()}
             setShowMarketGaps(false);
             setShowProductIdeas(false);
             setShowBookTitleGenerator(false);
+            setShowDealPage(false);
             setSelectedProduct(null);
             setActiveItem('samples');
           }}
@@ -277,6 +297,7 @@ Generated on: ${new Date().toLocaleString()}
             setShowMarketGaps(false);
             setShowProductIdeas(false);
             setShowBookTitleGenerator(false);
+            setShowDealPage(false);
             setSelectedProduct(null);
             setActiveItem('saved');
           }}
@@ -289,12 +310,13 @@ Generated on: ${new Date().toLocaleString()}
             setShowMarketGaps(false);
             setShowProductIdeas(false);
             setShowBookTitleGenerator(false);
+            setShowDealPage(false);
             setSelectedProduct(null);
             setActiveItem('request');
           }}
           onShowMemberHub={() => {
             if (!isSubscribed) {
-              setIsUpgradeModalOpen(true);
+              openUpgradeModal();
               // CRITICAL: Do not set showMemberHub(true) for free users
               // Background remains whatever it was
             } else {
@@ -307,6 +329,7 @@ Generated on: ${new Date().toLocaleString()}
               setShowProducts(false);
               setShowProductIdeas(false);
               setShowBookTitleGenerator(false);
+              setShowDealPage(false);
               setSelectedProduct(null);
             }
           }}
@@ -321,6 +344,7 @@ Generated on: ${new Date().toLocaleString()}
             setShowProducts(false);
             setShowProductIdeas(false);
             setShowBookTitleGenerator(false);
+            setShowDealPage(false);
             setSelectedProduct(null);
           }}
           onShowProductIdeas={() => {
@@ -333,7 +357,15 @@ Generated on: ${new Date().toLocaleString()}
             setShowSaved(false);
             setShowSamplesPage(false);
             setShowProducts(false);
+            setShowDealPage(false);
             setSelectedProduct(null);
+            if (!isSubscribed) {
+              openUpgradeModal(
+                "Unlock Digital Product Ideator",
+                "The Digital Product Ideator is a premium feature. Upgrade your plan to access this and other advanced tools.",
+                "Generate profitable digital product ideas"
+              );
+            }
           }}
           onShowBookTitleGenerator={() => {
             setActiveItem('booktitlegenerator');
@@ -345,16 +377,24 @@ Generated on: ${new Date().toLocaleString()}
             setShowSaved(false);
             setShowSamplesPage(false);
             setShowProducts(false);
+            setShowDealPage(false);
             setSelectedProduct(null);
+            if (!isSubscribed) {
+              openUpgradeModal(
+                "Unlock Book Title Generator",
+                "The Book Title Generator is a premium feature. Upgrade your plan to access this and other advanced tools.",
+                "Generate professional book titles"
+              );
+            }
           }}
-          onOpenUpgradeModal={() => setIsUpgradeModalOpen(true)}
+          onOpenUpgradeModal={() => openUpgradeModal()}
           onOpenContact={() => setIsContactModalOpen(true)}
           activeItem={activeItem}
-          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage || showMemberHub || showMarketGaps || showProductIdeas || showBookTitleGenerator}
+          isProductPage={showProducts || !!selectedProduct || showSamplesPage || showSaved || showRequestPage || showMemberHub || showMarketGaps || showProductIdeas || showBookTitleGenerator || showDealPage}
         />
 
         <main className="flex-grow">
-          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub && !showMarketGaps && !showProductIdeas && !showBookTitleGenerator ? 'block' : 'none' }}>
+          <div id="home-page" style={{ display: !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub && !showMarketGaps && !showProductIdeas && !showBookTitleGenerator && !showDealPage ? 'block' : 'none' }}>
             {selectedProduct ? (
               <ProductDetails
                 product={selectedProduct}
@@ -374,6 +414,18 @@ Generated on: ${new Date().toLocaleString()}
                 onOpenProduct={(product) => setSelectedProduct(product)}
                 onDownload={handleDownloadRequest}
                 searchTerm={searchTerm}
+                onShowDealPage={() => {
+                  setShowDealPage(true);
+                  setShowProducts(false);
+                  setShowSamplesPage(false);
+                  setShowSaved(false);
+                  setShowRequestPage(false);
+                  setShowMemberHub(false);
+                  setShowMarketGaps(false);
+                  setShowProductIdeas(false);
+                  setShowBookTitleGenerator(false);
+                  setSelectedProduct(null);
+                }}
               />
             )}
           </div>
@@ -1038,25 +1090,151 @@ Generated on: ${new Date().toLocaleString()}
         </div>
 
         {/* Product Ideas Page */}
-        <div id="product-ideas-page" style={{ display: showProductIdeas ? 'block' : 'none', background: '#F4F7F6', minHeight: '100vh', paddingTop: '80px' }}>
-          <div className="max-w-7xl mx-auto p-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
-            <ProductIdeator />
+        <div id="product-ideas-page" style={{ display: showProductIdeas ? 'block' : 'none', background: '#FFFFFF', minHeight: '100vh', paddingTop: '80px' }}>
+          <div className="max-w-7xl mx-auto p-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] relative overflow-hidden bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
+            <ProductIdeator onUpgrade={() => openUpgradeModal(
+              "Unlock Digital Product Ideator",
+              "The Digital Product Ideator is a premium feature. Upgrade your plan to access this and other advanced tools.",
+              "Generate profitable digital product ideas"
+            )} />
           </div>
         </div>
 
         {/* Book Title Generator Page */}
         <div id="book-title-generator-page" style={{ display: showBookTitleGenerator ? 'block' : 'none', background: '#FFFFFF', minHeight: '100vh', paddingTop: '80px' }}>
           <div className="max-w-7xl mx-auto p-4 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]">
-            <div className="w-full max-w-3xl bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
-              <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-3">
-                <FileEdit className="h-8 w-8 text-blue-500" />
-                Book Title Generator
-              </h1>
-              <hr className="border-gray-200 mb-6" />
-              <p className="text-lg text-gray-700 leading-relaxed">
-                Yahan aap apni nayi book ke liye aakarshak aur trending titles generate kar sakte hain.
-              </p>
+            <BookTitleGenerator onUpgrade={() => openUpgradeModal(
+              "Unlock Book Title Generator",
+              "The Book Title Generator is a premium feature. Upgrade your plan to access this and other advanced tools.",
+              "Generate professional book titles"
+            )} />
+          </div>
+        </div>
+
+        {/* Deal Page */}
+        <div id="deal-page" style={{ display: showDealPage ? 'block' : 'none', background: 'white', minHeight: '100vh' }}>
+          {/* Full-width Red Box Header attached to Navbar */}
+          <div className="w-full bg-[#E50914] pt-[80px] shadow-md relative z-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-center text-center">
+              <Check className="w-6 h-6 text-white mr-3 flex-shrink-0" />
+              <span className="text-white font-bold text-base sm:text-xl leading-tight">
+                You've Unlocked Extra 5% OFF Bonus As a Member
+              </span>
             </div>
+          </div>
+
+          {/* Premium Dark Theme Section - Full Width, attached to Red Box */}
+          <div className="w-full bg-[#121212] pt-16 pb-48 sm:pt-24 sm:pb-64 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center shadow-2xl relative z-10">
+            <div className="max-w-7xl mx-auto flex flex-col items-center">
+              {/* Top Badge */}
+              <div className="flex items-center gap-2 px-5 py-2 rounded-full border border-gray-700 bg-white/5 mb-8">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#FF0000]"></div>
+                <span className="text-white font-bold text-sm tracking-wide">Kickstart 2026 with special offer</span>
+              </div>
+
+              {/* Main Heading */}
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-tight mb-12 max-w-4xl">
+                Get lifetime access to your own library
+              </h1>
+
+              {/* Feature List */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
+                {[
+                  "Created by Experts",
+                  "Private Label Rights",
+                  "Lifetime Updates"
+                ].map((feature, idx) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-[#333333] flex items-center justify-center flex-shrink-0">
+                      <Check className="w-4 h-4 text-white" strokeWidth={3} />
+                    </div>
+                    <span className="text-white font-medium text-base sm:text-lg">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Extra White Space at the bottom (sized for ~1000 words) */}
+          <div className="w-full min-h-[1500px] sm:min-h-[2000px] bg-white relative z-10 px-4 sm:px-6 lg:px-8">
+            
+            {/* Pricing Card Overlapping Dark and White Backgrounds */}
+            <div className="relative w-full max-w-[480px] mx-auto -mt-40 sm:-mt-56 z-20">
+              <div className="bg-[#171717] rounded-[40px] p-10 sm:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col border border-gray-800">
+                <div className="flex justify-between items-start mb-10">
+                  <h3 className="text-white font-bold uppercase tracking-widest text-sm text-left">
+                    MASTER LIBRARY PRO
+                  </h3>
+                  <span className="bg-[#EF4444] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    Save 75%
+                  </span>
+                </div>
+                
+                <div className="flex flex-col items-center mb-12 w-full relative">
+                  <div className="w-full flex justify-end absolute -top-6 right-0">
+                    <span className="text-gray-500 text-sm line-through font-medium">$497</span>
+                  </div>
+                  <span className="text-7xl sm:text-8xl font-extrabold text-white tracking-tight leading-none mb-3">$137</span>
+                  <span className="text-gray-500 font-medium text-lg">/ lifetime</span>
+                  <span className="text-gray-400 text-sm mt-2">One-time payment</span>
+                </div>
+                
+                <button className="w-full py-5 bg-[#DC2626] text-white font-bold rounded-xl shadow-md hover:bg-red-700 transition-all mb-8 text-lg flex items-center justify-center">
+                  Unlock Everything with Pro
+                </button>
+                
+                <div className="flex items-center justify-center gap-2 mb-12">
+                  <Shield className="w-4 h-4 text-gray-500" />
+                  <span className="text-gray-500 text-sm font-medium">Secure checkout with Stripe</span>
+                </div>
+                
+                <div className="flex flex-col gap-8 w-full">
+                  {/* List 1 */}
+                  <div className="flex flex-col gap-5">
+                    <h4 className="text-[#DC2626] font-bold text-xs tracking-widest uppercase text-center">EVERYTHING IN LITE, PLUS:</h4>
+                    <div className="flex flex-col gap-5 w-fit mx-auto">
+                      {[
+                        "New Releases",
+                        "Request New Products"
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-5 justify-start">
+                          <div className="w-8 h-8 rounded-full bg-[#DC2626]/20 flex items-center justify-center flex-shrink-0">
+                            <Check className="w-4 h-4 text-[#DC2626]" strokeWidth={3} />
+                          </div>
+                          <span className="text-gray-200 font-semibold text-base text-left">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* List 2 */}
+                  <div className="flex flex-col gap-5">
+                    <h4 className="text-[#DC2626] font-bold text-xs tracking-widest uppercase text-center">RESOURCES AND TOOLS</h4>
+                    <div className="flex flex-col gap-5 w-fit mx-auto">
+                      {[
+                        "Description Writer",
+                        "Product Rebrander",
+                        "Product Ideator",
+                        "Book Title Generator",
+                        "Sales Copy Builder",
+                        "Email Sequence Creator",
+                        "Ad Creative Generator",
+                        "Social Media Planner",
+                        "SEO Optimizer"
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-5 justify-start">
+                          <div className="w-8 h-8 rounded-full bg-[#DC2626]/20 flex items-center justify-center flex-shrink-0">
+                            <Check className="w-4 h-4 text-[#DC2626]" strokeWidth={3} />
+                          </div>
+                          <span className="text-gray-200 font-semibold text-base text-left">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -1096,13 +1274,13 @@ Generated on: ${new Date().toLocaleString()}
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 rounded-full text-[10px] font-bold text-amber-600 tracking-wider mb-4 border border-amber-100">
                     <Crown className="h-3 w-3" /> MASTER LIFETIME ONLY
                   </div>
-                  <h2 className="text-2xl font-extrabold text-black mb-3">Unlock Market Gaps</h2>
-                  <p className="text-gray-500 text-sm mx-auto max-w-[280px]">Get access to 200+ curated business opportunities. Upgrade your plan to unlock the full vault and start building your business.</p>
+                  <h2 className="text-2xl font-extrabold text-black mb-3">{upgradeModalContent.title}</h2>
+                  <p className="text-gray-500 text-sm mx-auto max-w-[280px]">{upgradeModalContent.description}</p>
                 </div>
                 
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center gap-3 text-sm text-gray-900 font-medium">
-                    <Check className="h-5 w-5 text-black" /> Access 200+ Market Gaps
+                    <Check className="h-5 w-5 text-black" /> {upgradeModalContent.feature}
                   </div>
                   
                   <div className="relative my-6">
@@ -1199,13 +1377,15 @@ Generated on: ${new Date().toLocaleString()}
           )}
         </AnimatePresence>
 
-        <Footer 
-          onOpenContact={() => setIsContactModalOpen(true)} 
-          onOpenFaq={() => setIsFaqModalOpen(true)}
-          onOpenPrivacyPolicy={() => setIsPrivacyPolicyModalOpen(true)}
-          onOpenTermsOfService={() => setIsTermsOfServiceModalOpen(true)}
-          onOpenRefundPolicy={() => setIsRefundPolicyModalOpen(true)}
-        />
+        {!showDealPage && !showSamplesPage && !showSaved && !showRequestPage && !showMemberHub && !showMarketGaps && !showProductIdeas && !showBookTitleGenerator && (
+          <Footer 
+            onOpenContact={() => setIsContactModalOpen(true)} 
+            onOpenFaq={() => setIsFaqModalOpen(true)}
+            onOpenPrivacyPolicy={() => setIsPrivacyPolicyModalOpen(true)}
+            onOpenTermsOfService={() => setIsTermsOfServiceModalOpen(true)}
+            onOpenRefundPolicy={() => setIsRefundPolicyModalOpen(true)}
+          />
+        )}
 
         <PaymentSimulationModal
           isOpen={isPaymentModalOpen}

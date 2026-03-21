@@ -24,7 +24,7 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-48 pb-48 sm:pt-64 sm:pb-64 lg:pt-80 lg:pb-96">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-32 pb-48 sm:pt-48 sm:pb-64 lg:pt-64 lg:pb-96">
         <div className="text-center max-w-4xl mx-auto">
           <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 text-violet-300 text-sm font-medium mb-8 backdrop-blur-sm">
             <Zap className="w-4 h-4 mr-2 text-pink-400" />

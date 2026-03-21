@@ -10,6 +10,7 @@ interface ProductGridProps {
   onOpenProduct: (product: Product) => void;
   onDownload: (product: Product) => void;
   searchTerm: string;
+  onShowDealPage: () => void;
 }
 
 export default function ProductGrid({
@@ -17,6 +18,7 @@ export default function ProductGrid({
   onOpenProduct,
   onDownload,
   searchTerm,
+  onShowDealPage,
 }: ProductGridProps) {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -38,33 +40,30 @@ export default function ProductGrid({
     return matchesCategory && matchesSearch;
   });
 
-  const openBlankPage = () => {
-    document.body.innerHTML = '';
-    document.body.style.backgroundColor = 'white';
-  };
-
   return (
     <section
       id="products"
-      className="py-24 bg-white relative overflow-hidden font-sans"
+      className="pb-24 bg-white relative overflow-hidden font-sans"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* New Black Box Header */}
-        <div className="w-full bg-black rounded-2xl flex items-center justify-between py-5 px-6 sm:px-8 mb-12 shadow-xl min-h-[80px]">
+      {/* Full-width Red Box Header attached to Navbar */}
+      <div className="w-full bg-[#E50914] pt-[80px] shadow-md relative z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center max-w-[75%]">
             <span className="text-white font-bold text-base sm:text-xl leading-tight">
               Kickstart 2026 with special library offer
             </span>
           </div>
           <button 
-            onClick={openBlankPage}
-            className="bg-[#E50914] text-white px-3 py-1 rounded-full font-bold text-[11px] sm:text-xs flex items-center gap-1 hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap"
+            onClick={onShowDealPage}
+            className="bg-black text-white px-4 py-2 rounded-full font-bold text-[11px] sm:text-xs flex items-center gap-1 hover:bg-gray-900 transition-colors shadow-sm whitespace-nowrap"
           >
             Claim Deal <ArrowRight className="w-3 h-3" />
           </button>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-12">
+        
         <div className="flex flex-col items-center justify-center mb-12 gap-8 text-center">
           <div className="max-w-3xl mx-auto w-full">
             <h2 className="text-[28px] md:text-[42px] font-bold text-[#000000] mb-5 leading-tight">
