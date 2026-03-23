@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { ArrowRight, Check, Zap, ShieldCheck, RefreshCcw, Award, Gem, Headset } from "lucide-react";
-import LiveStats from "./LiveStats";
 import TrustReviews from "./TrustReviews";
 
 interface HeroProps {
@@ -223,9 +222,6 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
           </div>
         </div>
       </div>
-
-      {/* Live Stats Section */}
-      <LiveStats />
 
       {/* Bottom Button Section */}
       <div className="bg-pink-50 pt-24 pb-24 text-center px-4">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, ArrowRight, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb, Search, Folder, Wand2, FileEdit } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bookmark, X, Check, ClipboardList, ArrowDown, Library, Lock, Shield, Calendar, Crown, Database, Users, Phone, Zap, Play, Rocket, Globe, Lightbulb, Search, Folder, Wand2, FileEdit, TrendingUp, Star } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductGrid from "./components/ProductGrid";
@@ -19,6 +19,8 @@ import PaymentSimulationModal from "./components/PaymentSimulationModal";
 import SalesNotification from "./components/SalesNotification";
 import ProductIdeator from "./components/ProductIdeator";
 import BookTitleGenerator from "./components/BookTitleGenerator";
+import Confetti from "./components/Confetti";
+import MasterLibraryCheckout from "./components/MasterLibraryCheckout";
 import { WelcomeGiftProvider } from "./context/WelcomeGiftContext";
 import { products } from "./data";
 import { plannedItems } from "./roadmapData";
@@ -48,6 +50,84 @@ const trendingTopics = [
   { title: "Instagram Branding Mastery", description: "Proven strategies to grow from 0 to 100k followers with organic branding.", votes: 81, status: "Completed" },
   { title: "Cold Email Outreach", description: "The exact scripts and systems used to land $1000+ high-ticket clients consistently.", votes: 49, status: "In Progress" },
   { title: "Custom Invoice Generator", description: "A lightweight tool for small business owners to generate and manage professional invoices.", votes: 33, status: "Planned" },
+];
+
+const userReviews = [
+  {
+    name: "Aarav Mehta",
+    role: "Digital Marketer",
+    text: <>I’ve used many platforms, but the <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">ready-to-use content library</mark> here is on another level. It saves time and helps scale faster.</>
+  },
+  {
+    name: "Neha Sharma",
+    role: "Course Creator",
+    text: <>The <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">quality of ebooks and video materials</mark> is impressive. I was able to launch my course much quicker than expected.</>
+  },
+  {
+    name: "Rohit Verma",
+    role: "Agency Owner",
+    text: <>What I love most is the <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">flexibility to edit and rebrand</mark> everything. It fits perfectly into my business model.</>
+  },
+  {
+    name: "Priya Patel",
+    role: "Content Strategist",
+    text: <>Finding <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">high-demand PLR products</mark> used to take hours. Now I have everything I need in one single dashboard.</>
+  },
+  {
+    name: "Vikram Singh",
+    role: "E-commerce Founder",
+    text: <>The <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">one-time payment model</mark> is a game changer. No more recurring fees eating into my monthly profit margins.</>
+  },
+  {
+    name: "Ananya Desai",
+    role: "Social Media Manager",
+    text: <>I rely heavily on the <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">viral video clips and templates</mark>. My clients' engagement rates have skyrocketed since I started using them.</>
+  },
+  {
+    name: "Karan Kapoor",
+    role: "Freelance Writer",
+    text: <>The <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">prompts and article templates</mark> are incredibly well-researched. They give me a massive head start on all my projects.</>
+  },
+  {
+    name: "Sneha Reddy",
+    role: "Business Coach",
+    text: <>I recommend this to all my students. The <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">mini-courses and workbooks</mark> are perfect for lead generation and building authority.</>
+  },
+  {
+    name: "Arjun Nair",
+    role: "Software Entrepreneur",
+    text: <>The <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">SaaS UI kits and Notion templates</mark> saved my team weeks of design work. Absolutely worth every penny.</>
+  },
+  {
+    name: "Meera Joshi",
+    role: "Affiliate Marketer",
+    text: <>Having <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">full resell rights included</mark> means I can bundle these assets and create irresistible offers for my audience.</>
+  },
+  {
+    name: "Siddharth Rao",
+    role: "Startup Consultant",
+    text: <>The <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">neuromarketing guides</mark> are brilliant. I applied the psychological triggers to my landing page and saw an instant conversion bump.</>
+  },
+  {
+    name: "Kavita Menon",
+    role: "Email Specialist",
+    text: <>The <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">email marketing scripts</mark> are pure gold. High-converting, easy to tweak, and they cover almost every niche imaginable.</>
+  },
+  {
+    name: "Aditya Gupta",
+    role: "Dropshipping Expert",
+    text: <>I used the <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">automated dropshipping workflows</mark> to streamline my store. The step-by-step clarity is unmatched.</>
+  },
+  {
+    name: "Pooja Tiwari",
+    role: "Brand Designer",
+    text: <>The <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">Instagram branding mastery</mark> resources helped me completely overhaul my visual identity and attract premium clients.</>
+  },
+  {
+    name: "Manish Kumar",
+    role: "Sales Professional",
+    text: <>The <mark className="bg-[#fef3c7] text-[#92400e] px-1.5 py-0.5 rounded-sm font-medium">cold email outreach templates</mark> are incredibly effective. I've landed three high-ticket clients just this week using them.</>
+  }
 ];
 
 export default function App() {
@@ -98,6 +178,7 @@ export default function App() {
   const [showProductIdeas, setShowProductIdeas] = useState(false);
   const [showBookTitleGenerator, setShowBookTitleGenerator] = useState(false);
   const [showDealPage, setShowDealPage] = useState(false);
+  const [showMasterCheckout, setShowMasterCheckout] = useState<'lite' | 'pro' | null>(null);
   const [activeItem, setActiveItem] = useState('home');
 
   // Market Gaps State
@@ -1113,6 +1194,7 @@ Generated on: ${new Date().toLocaleString()}
 
         {/* Deal Page */}
         <div id="deal-page" style={{ display: showDealPage ? 'block' : 'none', background: 'white', minHeight: '100vh' }}>
+          {showDealPage && <Confetti />}
           {/* Full-width Red Box Header attached to Navbar */}
           <div className="w-full bg-[#E50914] pt-[80px] shadow-md relative z-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-center text-center">
@@ -1156,81 +1238,468 @@ Generated on: ${new Date().toLocaleString()}
           </div>
 
           {/* Extra White Space at the bottom (sized for ~1000 words) */}
-          <div className="w-full min-h-[1500px] sm:min-h-[2000px] bg-white relative z-10 px-4 sm:px-6 lg:px-8">
+          <div className="w-full min-h-[3000px] sm:min-h-[4000px] bg-white relative z-10 px-4 sm:px-6 lg:px-8">
             
-            {/* Pricing Card Overlapping Dark and White Backgrounds */}
-            <div className="relative w-full max-w-[480px] mx-auto -mt-40 sm:-mt-56 z-20">
-              <div className="bg-[#171717] rounded-[40px] p-10 sm:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col border border-gray-800">
-                <div className="flex justify-between items-start mb-10">
-                  <h3 className="text-white font-bold uppercase tracking-widest text-sm text-left">
-                    MASTER LIBRARY PRO
+            {/* Pricing Cards Overlapping Dark and White Backgrounds */}
+            <div className="relative w-full max-w-6xl mx-auto -mt-40 sm:-mt-56 z-20 px-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                
+                {/* LITE CARD */}
+                <div className="bg-white rounded-[40px] p-10 sm:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.1)] flex flex-col h-full">
+                  <h3 className="text-black font-bold uppercase tracking-widest text-sm mb-10 text-left">
+                    MASTER LIBRARY LITE
                   </h3>
-                  <span className="bg-[#EF4444] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                    Save 75%
-                  </span>
-                </div>
-                
-                <div className="flex flex-col items-center mb-12 w-full relative">
-                  <div className="w-full flex justify-end absolute -top-6 right-0">
-                    <span className="text-gray-500 text-sm line-through font-medium">$497</span>
+                  <div className="flex flex-col items-start mb-12">
+                    <span className="text-5xl sm:text-6xl font-extrabold text-black tracking-tight leading-none mb-3">$97</span>
+                    <span className="text-gray-500 font-medium text-lg">/ lifetime</span>
+                    <span className="text-gray-400 text-sm mt-2">One-time payment</span>
                   </div>
-                  <span className="text-7xl sm:text-8xl font-extrabold text-white tracking-tight leading-none mb-3">$137</span>
-                  <span className="text-gray-500 font-medium text-lg">/ lifetime</span>
-                  <span className="text-gray-400 text-sm mt-2">One-time payment</span>
-                </div>
-                
-                <button className="w-full py-5 bg-[#DC2626] text-white font-bold rounded-xl shadow-md hover:bg-red-700 transition-all mb-8 text-lg flex items-center justify-center">
-                  Unlock Everything with Pro
-                </button>
-                
-                <div className="flex items-center justify-center gap-2 mb-12">
-                  <Shield className="w-4 h-4 text-gray-500" />
-                  <span className="text-gray-500 text-sm font-medium">Secure checkout with Stripe</span>
-                </div>
-                
-                <div className="flex flex-col gap-8 w-full">
-                  {/* List 1 */}
-                  <div className="flex flex-col gap-5">
-                    <h4 className="text-[#DC2626] font-bold text-xs tracking-widest uppercase text-center">EVERYTHING IN LITE, PLUS:</h4>
-                    <div className="flex flex-col gap-5 w-fit mx-auto">
-                      {[
-                        "New Releases",
-                        "Request New Products"
-                      ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-5 justify-start">
-                          <div className="w-8 h-8 rounded-full bg-[#DC2626]/20 flex items-center justify-center flex-shrink-0">
-                            <Check className="w-4 h-4 text-[#DC2626]" strokeWidth={3} />
-                          </div>
-                          <span className="text-gray-200 font-semibold text-base text-left">{item}</span>
+                  
+                  <button 
+                    onClick={() => setShowMasterCheckout('lite')}
+                    className="w-full max-w-[280px] py-3 bg-black text-white font-bold rounded-full shadow-md hover:bg-gray-900 transition-all mb-8 text-base flex items-center justify-center mx-auto"
+                  >
+                    Get Master Library
+                  </button>
+                  
+                  <div className="flex items-center justify-center gap-2 mb-12">
+                    <Shield className="w-4 h-4 text-gray-400" />
+                    <span className="text-gray-400 text-sm font-medium">Secure checkout with Stripe</span>
+                  </div>
+                  
+                  <div className="flex flex-col gap-6 w-full">
+                    {[
+                      "More than 1000 Products",
+                      "Lifetime Access",
+                      "Private Label Rights",
+                      "High-Quality Content",
+                      "Instant Download",
+                      "Free Updates",
+                      "24/7 Premium Support"
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center gap-5">
+                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                          <Check className="w-4 h-4 text-gray-800" strokeWidth={3} />
                         </div>
+                        <span className="text-gray-700 font-semibold text-base text-left">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* PRO CARD */}
+                <div className="bg-black rounded-[40px] p-10 sm:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col h-full border border-white/10 relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-10">
+                    <h3 className="text-white font-bold uppercase tracking-widest text-sm text-left">
+                      MASTER LIBRARY PRO
+                    </h3>
+                    <div className="flex flex-col items-end relative">
+                      <span className="bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-sm uppercase tracking-wider shadow-[0_15px_35px_rgba(220,38,38,0.6)] inline-block transform -translate-y-2 border-b-2 border-red-800 transition-transform hover:-translate-y-3">
+                        Save 75%
+                      </span>
+                      <span className="text-gray-500 text-sm line-through font-medium absolute top-9 -right-1">$479</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col items-start mb-12">
+                    <span className="text-5xl sm:text-6xl font-extrabold text-white tracking-tight leading-none mb-3">$137</span>
+                    <span className="text-gray-400 font-medium text-lg">/ lifetime</span>
+                    <span className="text-gray-500 text-sm mt-2">One-time payment</span>
+                  </div>
+                  
+                  <button 
+                    onClick={() => setShowMasterCheckout('pro')}
+                    className="w-full max-w-[280px] py-3 bg-red-600 text-white font-bold rounded-full shadow-lg hover:bg-red-700 transition-all mb-8 text-sm flex items-center justify-center mx-auto"
+                  >
+                    Unlock Everything with Pro
+                  </button>
+                  
+                  <div className="flex items-center justify-center gap-2 mb-12">
+                    <Shield className="w-4 h-4 text-gray-500" />
+                    <span className="text-gray-500 text-sm font-medium">Secure checkout with Stripe</span>
+                  </div>
+                  
+                  <div className="flex flex-col gap-6 w-full">
+                    {[
+                      "Everything in Lite",
+                      "Unlimited AI Tools Access",
+                      "Priority Support",
+                      "Exclusive New Releases",
+                      "Commercial License",
+                      "White Label Rights",
+                      "Custom Branding Options"
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center gap-5">
+                        <div className="w-8 h-8 rounded-full bg-red-600/20 flex items-center justify-center flex-shrink-0">
+                          <Check className="w-4 h-4 text-red-600" strokeWidth={3} />
+                        </div>
+                        <span className="text-gray-300 font-semibold text-base text-left">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Informational Card */}
+            <div className="w-full max-w-3xl mx-auto mt-16 sm:mt-24">
+              <div className="bg-[#f9f9f9] rounded-[16px] shadow-sm border border-gray-100 p-6 sm:p-8 flex items-center gap-6 sm:gap-8">
+                {/* Left Column: Icon Box */}
+                <div className="w-16 h-16 bg-red-600 rounded-[10px] flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <TrendingUp className="w-8 h-8 text-white" strokeWidth={2.5} />
+                </div>
+                
+                {/* Right Column: Text Box */}
+                <div className="flex flex-col gap-1.5">
+                  <h4 className="text-[#333333] font-medium text-lg sm:text-xl leading-snug">
+                    We are adding over <span className="text-red-600 font-bold">20 new products</span> <span className="text-black">every week.</span>
+                  </h4>
+                  <p className="text-[#666666] text-base sm:text-lg leading-snug">
+                    Another <span className="text-red-600 font-bold">1,000 products</span> will be added by the end of <span className="text-red-600 font-bold">2026</span>.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Subscription Section */}
+            <div className="w-full max-w-3xl mx-auto mt-24 sm:mt-32 text-center flex flex-col items-center">
+              <span className="bg-red-600 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-sm uppercase tracking-wider shadow-[0_15px_35px_rgba(220,38,38,0.6)] inline-block border-b-2 border-red-800 mb-6">
+                No Monthly Fees
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#333333] tracking-tight mb-6">
+                Stop Paying Monthly Subscriptions
+              </h2>
+              <p className="text-[#666666] text-base sm:text-lg md:text-xl leading-relaxed">
+                Tired of paying every month?<br />
+                Get full access without any recurring charges.<br />
+                Enjoy all features with a one-time payment<br />
+                and say goodbye to subscriptions forever.
+              </p>
+            </div>
+
+            {/* Vertically Stacked Cards Section */}
+            <div className="w-full max-w-xl mx-auto mt-20 sm:mt-28 flex flex-col gap-5">
+              
+              {/* Box 1: Red Card */}
+              <div className="bg-red-600 rounded-[24px] p-8 sm:p-10 shadow-md text-left flex flex-col justify-center min-h-[160px] sm:min-h-[180px]">
+                <h3 className="text-white text-2xl sm:text-3xl font-bold mb-3 tracking-tight">
+                  15 Content Formats
+                </h3>
+                <p className="text-white/90 text-sm sm:text-base leading-relaxed font-medium">
+                  Ebooks, Videos, Audios, Templates, Prompts,<br className="hidden sm:block" />
+                  Guides, Articles, Workbooks, Mini-Courses,<br className="hidden sm:block" />
+                  Notion, and more.
+                </p>
+              </div>
+
+              {/* Box 2: Black Card */}
+              <div className="bg-black rounded-[24px] p-8 sm:p-10 shadow-md text-left flex flex-col justify-center min-h-[160px] sm:min-h-[180px]">
+                <h3 className="text-white text-2xl sm:text-3xl font-bold mb-3 tracking-tight">
+                  1000+ Premium Products
+                </h3>
+                <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-medium">
+                  Access one of the largest digital libraries.<br className="hidden sm:block" />
+                  Unlimited resources ready to use anytime.
+                </p>
+              </div>
+
+              {/* Box 3: Light Gray Card */}
+              <div className="bg-[#f4f4f5] rounded-[24px] p-8 sm:p-10 shadow-sm text-center flex flex-col justify-center min-h-[120px] sm:min-h-[140px]">
+                <h3 className="text-[#333333] text-xl sm:text-2xl font-bold tracking-tight">
+                  Trending & High-Demand Content
+                </h3>
+              </div>
+
+              {/* Box 4: Light Gray Card */}
+              <div className="bg-[#f4f4f5] rounded-[24px] p-8 sm:p-10 shadow-sm text-center flex flex-col justify-center min-h-[120px] sm:min-h-[140px]">
+                <h3 className="text-[#333333] text-xl sm:text-2xl font-bold tracking-tight">
+                  Created by Industry Experts
+                </h3>
+              </div>
+
+              {/* Box 5: Red Card */}
+              <div className="bg-red-600 rounded-[24px] p-8 sm:p-10 shadow-md text-left flex flex-col justify-center min-h-[160px] sm:min-h-[180px]">
+                <h3 className="text-white text-2xl sm:text-3xl font-bold mb-3 tracking-tight">
+                  Full Resell Rights Included
+                </h3>
+                <p className="text-white/90 text-sm sm:text-base leading-relaxed font-medium">
+                  Sell, edit, rebrand, and use freely<br className="hidden sm:block" />
+                  with no limitations or restrictions.
+                </p>
+              </div>
+
+              {/* Box 6: Light Gray Card */}
+              <div className="bg-[#f4f4f5] rounded-[24px] p-8 sm:p-10 shadow-sm text-center flex flex-col justify-center min-h-[120px] sm:min-h-[140px]">
+                <h3 className="text-[#333333] text-xl sm:text-2xl font-bold tracking-tight">
+                  Only Premium Quality
+                </h3>
+              </div>
+
+              {/* Box 7: Light Gray Card */}
+              <div className="bg-[#f4f4f5] rounded-[24px] p-8 sm:p-10 shadow-sm text-center flex flex-col justify-center min-h-[120px] sm:min-h-[140px]">
+                <h3 className="text-[#333333] text-xl sm:text-2xl font-bold tracking-tight">
+                  20 New Products Every Week
+                </h3>
+              </div>
+
+              {/* Box 8: Black Card */}
+              <div className="bg-black rounded-[24px] p-8 sm:p-10 shadow-md text-left flex flex-col justify-center min-h-[160px] sm:min-h-[180px] relative overflow-hidden">
+                <div className="relative z-10 w-full sm:w-2/3">
+                  <h3 className="text-white text-2xl sm:text-3xl font-bold mb-3 tracking-tight">
+                    $0.20 Per Product
+                  </h3>
+                  <p className="text-gray-400 text-sm sm:text-base leading-relaxed font-medium">
+                    Get high-quality digital products at an<br className="hidden sm:block" />
+                    unbeatable price. Build and scale your<br className="hidden sm:block" />
+                    digital business affordably.
+                  </p>
+                </div>
+                {/* Subtle Rocket Illustration */}
+                <div className="absolute right-[-10px] sm:right-6 top-1/2 -translate-y-1/2 opacity-20 pointer-events-none">
+                  <Rocket className="w-32 h-32 sm:w-40 sm:h-40 text-white transform rotate-12" strokeWidth={1.5} />
+                </div>
+              </div>
+
+            </div>
+
+            {/* User Satisfaction Section */}
+            <div className="w-full max-w-4xl mx-auto mt-24 sm:mt-32 text-center flex flex-col items-center">
+              <div className="bg-red-600 text-white text-sm sm:text-base font-medium px-6 py-2 rounded-full mb-6 sm:mb-8 inline-flex items-center justify-center">
+                Rated 4.7/5 overall by our users
+              </div>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-black tracking-tight leading-[1.1]">
+                98% satisfied<br />users
+              </h2>
+
+              {/* Reviews Section */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-12 sm:gap-20 mt-16 w-full">
+                
+                {/* Trustpilot */}
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-[#00b67a] rounded-md flex items-center justify-center">
+                      <Star className="w-5 h-5 fill-white text-white" />
+                    </div>
+                    <span className="font-bold text-xl text-black">Trustpilot</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-6 h-6 fill-[#00b67a] text-[#00b67a]" />
+                    ))}
+                  </div>
+                  <span className="text-[#666666] text-sm font-medium">Trustpilot 4.8/5</span>
+                </div>
+
+                {/* Facebook */}
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-[#1877F2] rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-xl leading-none font-serif italic pr-1 pb-1">f</span>
+                    </div>
+                    <span className="font-bold text-xl text-black">Facebook</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-6 h-6 fill-[#1877F2] text-[#1877F2]" />
+                    ))}
+                  </div>
+                  <span className="text-[#666666] text-sm font-medium">Facebook 4.9/5</span>
+                </div>
+
+                {/* Google */}
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                      </svg>
+                    </div>
+                    <span className="font-bold text-xl text-black">Google</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-6 h-6 fill-[#FFC107] text-[#FFC107]" />
+                    ))}
+                  </div>
+                  <span className="text-[#666666] text-sm font-medium">Google 4.8/5</span>
+                </div>
+
+              </div>
+            </div>
+
+            {/* 15 Review Cards Section */}
+            <div className="w-full max-w-xl mx-auto mt-20 sm:mt-28 flex flex-col gap-6">
+              {userReviews.map((review, index) => (
+                <div key={index} className="bg-white rounded-[24px] p-6 sm:p-8 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 flex flex-col justify-between min-h-[220px] sm:min-h-[200px] w-full">
+                  <div className="flex flex-col gap-5">
+                    {/* Top Section */}
+                    <div className="flex items-center gap-4">
+                      <img src={`https://picsum.photos/seed/${review.name.replace(' ', '')}/150/150`} alt={review.name} className="w-14 h-14 rounded-full object-cover bg-gray-100 flex-shrink-0" referrerPolicy="no-referrer" />
+                      <div className="flex flex-col">
+                        <span className="font-bold text-lg text-[#333333] leading-tight">{review.name}</span>
+                        <span className="text-sm text-[#888888] font-medium mt-0.5">{review.role}</span>
+                      </div>
+                    </div>
+                    {/* Rating */}
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-5 h-5 fill-[#FFC107] text-[#FFC107]" />
                       ))}
+                    </div>
+                    {/* Review Text */}
+                    <p className="text-[#444444] text-base leading-relaxed">
+                      {review.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* New Hero Section */}
+            <div className="w-full max-w-4xl mx-auto mt-24 sm:mt-32 text-center flex flex-col items-center">
+              <div className="bg-red-600 text-white text-sm sm:text-base font-medium px-6 py-2 rounded-full mb-6 sm:mb-8 inline-flex items-center justify-center">
+                Creating World-Class Content
+              </div>
+              <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold text-black tracking-tight leading-[1.1] mb-6 sm:mb-8">
+                #1 Digital<br />Product<br />Provider
+              </h2>
+              <p className="text-[#666666] text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
+                Most digital products feel outdated and low quality.<br className="hidden sm:block" />
+                We focus on delivering modern, high-value content<br className="hidden sm:block" />
+                that actually helps you grow faster and stand out.
+              </p>
+            </div>
+
+            {/* Comparison Table Section */}
+            <div className="w-full max-w-4xl mx-auto mt-20 sm:mt-28">
+              <div className="bg-white rounded-[24px] sm:rounded-[32px] shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+                {/* Header */}
+                <div className="bg-black grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6">
+                  <div className="text-white font-bold text-sm sm:text-lg text-left">Features</div>
+                  <div className="text-white font-bold text-sm sm:text-lg text-center">Enterpedia</div>
+                  <div className="text-white font-bold text-sm sm:text-lg text-center">Other Sites</div>
+                </div>
+                
+                {/* Rows */}
+                <div className="flex flex-col">
+                  {/* Row 1 */}
+                  <div className="grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6 border-b border-gray-100">
+                    <div className="text-[#333333] font-bold text-xs sm:text-base text-left pr-2">More Than 1000 Products</div>
+                    <div className="flex justify-center items-center">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" strokeWidth={3} />
+                    </div>
+                    <div className="flex justify-center items-center">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-black" strokeWidth={3} />
                     </div>
                   </div>
 
-                  {/* List 2 */}
-                  <div className="flex flex-col gap-5">
-                    <h4 className="text-[#DC2626] font-bold text-xs tracking-widest uppercase text-center">RESOURCES AND TOOLS</h4>
-                    <div className="flex flex-col gap-5 w-fit mx-auto">
-                      {[
-                        "Description Writer",
-                        "Product Rebrander",
-                        "Product Ideator",
-                        "Book Title Generator",
-                        "Sales Copy Builder",
-                        "Email Sequence Creator",
-                        "Ad Creative Generator",
-                        "Social Media Planner",
-                        "SEO Optimizer"
-                      ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-5 justify-start">
-                          <div className="w-8 h-8 rounded-full bg-[#DC2626]/20 flex items-center justify-center flex-shrink-0">
-                            <Check className="w-4 h-4 text-[#DC2626]" strokeWidth={3} />
-                          </div>
-                          <span className="text-gray-200 font-semibold text-base text-left">{item}</span>
-                        </div>
-                      ))}
+                  {/* Row 2 */}
+                  <div className="grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6 border-b border-gray-100 bg-[#fafafa]">
+                    <div className="text-[#333333] font-bold text-xs sm:text-base text-left pr-2">New Products Weekly</div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Free</span>
+                    </div>
+                    <div className="flex justify-center items-center">
+                      <X className="w-5 h-5 sm:w-6 sm:h-6 text-black" strokeWidth={3} />
                     </div>
                   </div>
+
+                  {/* Row 3 */}
+                  <div className="grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6 border-b border-gray-100">
+                    <div className="text-[#333333] font-bold text-xs sm:text-base text-left pr-2">Average Price Per Product</div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Less Than 20%</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <X className="w-5 h-5 sm:w-6 sm:h-6 text-black" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">At Least $5.00</span>
+                    </div>
+                  </div>
+
+                  {/* Row 4 */}
+                  <div className="grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6 border-b border-gray-100 bg-[#fafafa]">
+                    <div className="text-[#333333] font-bold text-xs sm:text-base text-left pr-2">Lifetime Unrestricted Access</div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Available</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <X className="w-5 h-5 sm:w-6 sm:h-6 text-black" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Pay Per Product</span>
+                    </div>
+                  </div>
+
+                  {/* Row 5 */}
+                  <div className="grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6 border-b border-gray-100">
+                    <div className="text-[#333333] font-bold text-xs sm:text-base text-left pr-2">In-House Creative Team</div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Unique Products</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <X className="w-5 h-5 sm:w-6 sm:h-6 text-black" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Duplicated Content</span>
+                    </div>
+                  </div>
+
+                  {/* Row 6 */}
+                  <div className="grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6 border-b border-gray-100 bg-[#fafafa]">
+                    <div className="text-[#333333] font-bold text-xs sm:text-base text-left pr-2">Money Back Guarantee</div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Full 30 Days</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <X className="w-5 h-5 sm:w-6 sm:h-6 text-black" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">No Guarantee</span>
+                    </div>
+                  </div>
+
+                  {/* Row 7 */}
+                  <div className="grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6 border-b border-gray-100">
+                    <div className="text-[#333333] font-bold text-xs sm:text-base text-left pr-2">Overall Content Quality</div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Made by Experts</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <X className="w-5 h-5 sm:w-6 sm:h-6 text-black" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Low Outdated Quality</span>
+                    </div>
+                  </div>
+
+                  {/* Row 8 */}
+                  <div className="grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6 border-b border-gray-100 bg-[#fafafa]">
+                    <div className="text-[#333333] font-bold text-xs sm:text-base text-left pr-2">Graphics & Design</div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Best-Seller Standards</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <X className="w-5 h-5 sm:w-6 sm:h-6 text-black" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">Basic At Best</span>
+                    </div>
+                  </div>
+
+                  {/* Row 9 */}
+                  <div className="grid grid-cols-3 items-center px-4 sm:px-8 py-5 sm:py-6">
+                    <div className="text-[#333333] font-bold text-xs sm:text-base text-left pr-2">Growth Tools & Resources</div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <Check className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">University & Toolkit</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-2">
+                      <X className="w-5 h-5 sm:w-6 sm:h-6 text-black" strokeWidth={3} />
+                      <span className="text-[#333333] font-bold text-xs sm:text-sm text-center">No Resources</span>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -1392,6 +1861,13 @@ Generated on: ${new Date().toLocaleString()}
           onClose={() => setIsPaymentModalOpen(false)}
           product={downloadProduct}
         />
+
+        {showMasterCheckout && (
+          <MasterLibraryCheckout 
+            plan={showMasterCheckout} 
+            onClose={() => setShowMasterCheckout(null)} 
+          />
+        )}
 
         <AuthModal
           isOpen={isAuthModalOpen}
