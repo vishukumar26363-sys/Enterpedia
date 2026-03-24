@@ -184,6 +184,8 @@ export default function ProductDetails({
               <img
                 src={activeImage}
                 alt={product.title}
+                loading="eager"
+                decoding="sync"
                 className="w-full h-full object-cover transition-opacity duration-300"
                 referrerPolicy="no-referrer"
               />
@@ -201,6 +203,8 @@ export default function ProductDetails({
                   <img 
                     src={img} 
                     alt={`Thumbnail ${idx + 1}`} 
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
@@ -234,6 +238,8 @@ export default function ProductDetails({
                   <img 
                     src={img} 
                     alt={`Preview page ${idx + 1}`} 
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />

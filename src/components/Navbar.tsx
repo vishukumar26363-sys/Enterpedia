@@ -102,6 +102,11 @@ export default function Navbar({
               <img 
                 src="https://i.imgur.com/4N4PXjW.png" 
                 alt="Enterpedia Logo" 
+                width="120"
+                height="24"
+                fetchPriority="high"
+                loading="eager"
+                decoding="sync"
                 className="h-[24px] w-auto block bg-transparent shadow-none border-none"
                 referrerPolicy="no-referrer"
               />
@@ -248,6 +253,11 @@ export default function Navbar({
                 <img 
                   src="https://i.imgur.com/4N4PXjW.png" 
                   alt="Enterpedia Logo" 
+                  width="130"
+                  height="26"
+                  fetchPriority="high"
+                  loading="eager"
+                  decoding="sync"
                   className="h-[26px] w-auto block bg-transparent shadow-none border-none"
                   referrerPolicy="no-referrer"
                 />

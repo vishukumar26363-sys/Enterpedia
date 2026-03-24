@@ -35,6 +35,11 @@ export default function MasterLibraryCheckout({ onClose, plan }: Props) {
         <img 
           src="https://i.ibb.co/jstncJk/c3f4016b-2b10-4250-ba9b-8bf8dbc94cf8.png" 
           alt="Logo" 
+          width="120"
+          height="24"
+          fetchPriority="high"
+          loading="eager"
+          decoding="sync"
           className="h-[24px] w-auto block ml-0.5"
           referrerPolicy="no-referrer"
         />
@@ -45,6 +50,11 @@ export default function MasterLibraryCheckout({ onClose, plan }: Props) {
         <img 
           src="https://i.ibb.co/QjkLj0cR/812-removebg-preview.png" 
           alt="Master Library Bundle" 
+          width="600"
+          height="400"
+          fetchPriority="high"
+          loading="eager"
+          decoding="sync"
           className="w-[75%] sm:w-[65%] md:w-[55%] max-w-xl h-auto max-h-[55vh] object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.05)]"
           referrerPolicy="no-referrer"
         />

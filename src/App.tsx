@@ -601,7 +601,7 @@ Generated on: ${new Date().toLocaleString()}
                              >
                                <Bookmark className="h-4 w-4 fill-black text-black" />
                              </button>
-                             <img src={item.imageUrl} alt={item.title} className="w-full h-48 object-cover rounded-lg mb-4" />
+                             <img src={item.imageUrl} alt={item.title} loading="lazy" decoding="async" width="400" height="300" className="w-full h-48 object-cover rounded-lg mb-4" />
                              <h3 className="font-bold text-slate-900 mb-1">{item.title}</h3>
                              <p className="text-violet-600 font-semibold">₹{item.price.toFixed(0)}</p>
                            </div>
@@ -1538,7 +1538,7 @@ Generated on: ${new Date().toLocaleString()}
                   <div className="flex flex-col gap-5">
                     {/* Top Section */}
                     <div className="flex items-center gap-4">
-                      <img src={`https://picsum.photos/seed/${review.name.replace(' ', '')}/150/150`} alt={review.name} className="w-14 h-14 rounded-full object-cover bg-gray-100 flex-shrink-0" referrerPolicy="no-referrer" />
+                      <img src={`https://picsum.photos/seed/${review.name.replace(' ', '')}/150/150`} alt={review.name} loading="lazy" decoding="async" className="w-14 h-14 rounded-full object-cover bg-gray-100 flex-shrink-0" referrerPolicy="no-referrer" />
                       <div className="flex flex-col">
                         <span className="font-bold text-lg text-[#333333] leading-tight">{review.name}</span>
                         <span className="text-sm text-[#888888] font-medium mt-0.5">{review.role}</span>

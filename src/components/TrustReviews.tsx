@@ -114,6 +114,8 @@ export default function TrustReviews({ onShowProducts }: TrustReviewsProps) {
                 <img 
                   src={testimonial.image} 
                   alt={testimonial.name} 
+                  loading="lazy"
+                  decoding="async"
                   className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-100"
                   referrerPolicy="no-referrer"
                 />

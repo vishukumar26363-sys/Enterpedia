@@ -31,12 +31,14 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
           </div>
 
           <h1 className="text-4xl tracking-tight font-display font-extrabold text-white sm:text-6xl md:text-7xl lg:text-8xl mb-6">
-            Premium PLR Digital Products: <br className="hidden md:block" />
-            <span className="text-gradient">Get Free Samples & Best Resell Bundles</span>
+            PLR Digital Products & MRR Resell Bundles <br className="hidden md:block" />
+            <span className="text-gradient">– Get Free Samples</span>
           </h1>
 
           <p className="mt-6 text-lg text-slate-300 sm:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            Stop wasting months creating content from scratch. Get instant access to High-Quality PLR Products, including Done-for-you Video Courses, Premium Ebooks, Viral Reels Templates, and expert guides. With Master Resell Rights (MRR), you can rebrand them, sell them as your own, or use them to grow your business. You own the Digital Assets—100% of the profit stays with you.
+            Stop wasting months creating content from scratch. Get instant access to high-quality PLR digital products and MRR products, including Done-for-you Video Courses, Premium Ebooks, Viral Reels Templates, and expert guides.
+            <br /><br />
+            With Master Resell Rights (MRR), you can rebrand these PLR digital products, sell them as your own, or use them to grow your business. You can also buy PLR bundles that are ready-to-sell and start earning instantly. You own the Digital Assets—100% of the profit stays with you.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-6">
@@ -56,6 +58,10 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
                     className="w-8 h-8 rounded-full border-2 border-slate-950"
                     src={`https://i.pravatar.cc/100?img=${i + 10}`}
                     alt="User"
+                    width="32"
+                    height="32"
+                    loading="eager"
+                    decoding="sync"
                   />
                 ))}
               </div>
@@ -113,11 +119,15 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
       {/* New Hero Section */}
       <div className="bg-pink-50 -mt-4 py-2 px-4 text-center">
         <h2 className="text-4xl tracking-tight font-display font-bold text-black sm:text-6xl md:text-7xl lg:text-8xl">
-          Premium PLR Bundles <br />
-          <span className="text-gradient">with Resell Rights</span>
+          Premium PLR Digital Products & Bundles <br />
+          <span className="text-gradient">with Master Resell Rights (MRR)</span>
         </h2>
         <p className="mt-4 text-lg text-slate-800 max-w-2xl mx-auto font-light leading-relaxed">
-          Quit spending time on research and design. Instantly grab Professional PLR Video Courses, Viral Reels Assets, and expert-written Digital Ebooks. With Master Resell Rights, you can customize them, sell them as your own, and build your business. Take total license control of these Premium Digital Products—you pocket 100% of the revenue forever.
+          Quit spending time on research and design. Instantly grab professional PLR digital products including high-quality PLR Video Courses, Viral Reels Assets, and expert-written Digital Ebooks.
+          <br /><br />
+          With Master Resell Rights (MRR), you can customize these PLR digital products, sell them as your own, or use them to grow your online business. These MRR products give you full control and flexibility to build a profitable digital business. 
+          <br /><br />
+          Take total license control of these premium digital products—you can also buy PLR bundles and start selling instantly while keeping 100% of the revenue forever.
         </p>
 
         {/* New Categories Grid */}
@@ -233,11 +243,17 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
         </button>
 
         <h2 className="text-4xl tracking-tight font-display font-bold text-black sm:text-6xl md:text-7xl lg:text-8xl mt-6">
-          Get Pro Courses & PLR Ebooks <br />
-          <span className="text-gradient">with Resell Rights</span>
+          Get Pro PLR Courses & Digital Ebooks <br />
+          <span className="text-gradient">with Master Resell Rights (MRR)</span>
         </h2>
         <p className="mt-6 text-lg text-slate-800 sm:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-          Build premium, high-value assets instantly with Elite PLR Digital Content that looks like years of hard work. Join the next age of Digital Product Selling while scaling your business today with Viral Reels Templates and Ready-to-Resell Ebooks. Scale your brand with the Best PLR Bundles in the market
+          Build premium, high-value assets instantly with Elite PLR digital products that look like years of hard work and professional creation.
+          <br /><br />
+          Step into the next age of digital product selling with MRR products (Master Resell Rights) and start scaling your business today using Viral Reels Templates and Ready-to-Resell Ebooks.
+          <br /><br />
+          These PLR digital products are designed for fast growth, allowing you to buy PLR bundles and instantly launch your own digital brand without spending months on content creation.
+          <br /><br />
+          Scale your brand with the best PLR bundles in the market and turn ready-made digital assets into a long-term income system.
         </p>
 
         <div className="mt-24">
@@ -247,11 +263,15 @@ export default function Hero({ isLoggedIn, onOpenAuth, onShowProducts, onOpenLic
         </div>
 
         <h2 className="text-4xl tracking-tight font-display font-bold text-black sm:text-6xl md:text-7xl lg:text-8xl mt-6">
-          Get Master Resell Rights on <br />
-          <span className="text-gradient">This Entire Digital Product Collection</span>
+          Get Master Resell Rights (MRR) on <br />
+          <span className="text-gradient">This Entire PLR Digital Product Collection</span>
         </h2>
         <p className="mt-6 text-lg text-slate-800 sm:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-          Market and monetize these premium PLR assets without limits. You get the power to totally rebrand and modify the entire collection to match your brand's artistic standards. With our Master Resell Rights (MRR), these high-quality digital products belong to you forever with full commercial rights. Start your own digital store today with our ready-to-sell assets
+          Market and monetize these premium PLR digital products without limits. You get full freedom to rebrand and modify the entire collection to match your brand’s identity and artistic standards.
+          <br /><br />
+          With our Master Resell Rights (MRR), these high-quality PLR digital products belong to you forever with full commercial rights, allowing you to build and scale your business easily.
+          <br /><br />
+          You can also buy PLR bundles and instantly start your own digital store using ready-to-sell assets designed for fast profits and long-term growth.
         </p>
 
         <h2 className="text-[28px] md:text-[32px] font-display font-bold text-black tracking-tight mt-24 mb-10">

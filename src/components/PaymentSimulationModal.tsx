@@ -125,6 +125,10 @@ export default function PaymentSimulationModal({
                       <img 
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=6394663971@ptaxis%26pn=Vishu%20Kumar%26am=${currentPrice}%26cu=INR`} 
                         alt="Payment QR Code"
+                        loading="lazy"
+                        decoding="async"
+                        width="160"
+                        height="160"
                         className="w-40 h-40 shadow-sm rounded-lg bg-white p-2 mx-auto"
                       />
                       <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">Pay ₹{currentPrice.toFixed(0)} to Vishal Kumar</p>
