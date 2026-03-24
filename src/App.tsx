@@ -1777,12 +1777,25 @@ Generated on: ${new Date().toLocaleString()}
                   </div>
                 </div>
 
-                <a
-                  href="/pricing"
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsUpgradeModalOpen(false);
+                    setShowDealPage(true);
+                    setShowProducts(false);
+                    setShowSamplesPage(false);
+                    setShowSaved(false);
+                    setShowRequestPage(false);
+                    setShowMemberHub(false);
+                    setShowMarketGaps(false);
+                    setShowProductIdeas(false);
+                    setShowBookTitleGenerator(false);
+                    setSelectedProduct(null);
+                  }}
                   className="block w-full text-center px-6 py-4 bg-[#E11D48] text-white rounded-xl font-bold hover:bg-[#BE123C] transition-colors mb-6 text-sm"
                 >
-                  See pricing plans →
-                </a>
+                  Claim Deal →
+                </button>
                 
                 <div className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 mb-6">
                   <Shield className="h-3.5 w-3.5" /> Secure checkout • Lifetime access
